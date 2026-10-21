@@ -31,6 +31,8 @@ Os arquivos da interface precisam permanecer juntos. As folhas de estilo, os scr
 
 O seletor **Votos exibidos** escolhe somente os dados de votação, lista os cargos do maior para o menor e apresenta uma orientação contextual: a base de aptos, comparecimento e abstenção é comum à seção e não muda com o cargo. Para Presidente, a visão por partido fica oculta porque o recorte por seção não contém a classificação partidária. Filtros e indicadores usam espaçamentos compactos para priorizar o conteúdo tabular. A ordenação das tabelas usa botões acessíveis por teclado e comunica a coluna e a direção com `aria-sort`.
 
+O cabeçalho identifica o produto como painel independente, sem usar a identificação institucional da Justiça Eleitoral. Os indicadores formam uma faixa compacta e as orientações repetidas nos filtros permanecem acessíveis sem ocupar espaço visual.
+
 ## Persistência e rede
 
 Os dados locais são lidos em memória durante a execução da página. O painel não grava alterações em `localStorage`, não usa banco de dados e não envia os dados consultados a um servidor. A exportação gera um arquivo CSV baixável pelo navegador.

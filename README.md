@@ -1,10 +1,10 @@
 # Painel Eleitoral — 3ª e 30ª ZE de Rondônia
 
-Painel estático e offline para consultar abstenção por seção e resultados eleitorais das Zonas Eleitorais 3 e 30 de Rondônia.
+Painel independente, estático e offline para consultar abstenção por seção e resultados eleitorais das Zonas Eleitorais 3 e 30 de Rondônia, com dados públicos do TSE.
 
 **Eleição:** 1º turno das Eleições Gerais de 2026, em 4 de outubro de 2026  
 **Escopo:** Ji-Paraná e Presidente Médici, conforme a zona eleitoral  
-**Versão:** 0.0.4  
+**Versão:** 0.0.5  
 **Documentação revisada em:** 21 de outubro de 2026
 
 ## Começar

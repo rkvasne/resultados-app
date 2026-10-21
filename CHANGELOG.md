@@ -4,6 +4,13 @@ Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelo
 
 ## [Não lançado]
 
+## [0.0.5] - 2026-10-21
+
+### Alterado
+
+- Removida a identificação institucional do cabeçalho e reduzidos os elementos acima da tabela para priorizar os resultados.
+- Compactados os indicadores em uma faixa única e ocultadas orientações repetidas no filtro de cargo, mantendo-as disponíveis para leitores de tela.
+
 ## [0.0.4] - 2026-10-21
 
 ### Corrigido
