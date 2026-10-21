@@ -169,3 +169,72 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+:root {
+  --muted: #596980;
+}
+
+.field label {
+  font-size: 12px;
+}
+
+.office-field {
+  align-self: start;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+}
+
+.office-field small {
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.eyebrow {
+  font-size: 11px;
+  text-transform: none;
+  letter-spacing: 0.04em;
+}
+
+.metric .sub,
+.minor {
+  font-size: 12px;
+}
+
+.sort-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+  cursor: pointer;
+}
+
+th.num .sort-button {
+  justify-content: flex-end;
+}
+
+.sort-button:focus-visible {
+  position: relative;
+  outline: 3px solid var(--blue);
+  outline-offset: -3px;
+  border-radius: 4px;
+}
+
+th {
+  padding: 0;
+}
+
+@media (max-width: 480px) {
+  .office-field {
+    grid-column: 1 / -1;
+  }
+}

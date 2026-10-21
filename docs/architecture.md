@@ -16,6 +16,8 @@ O projeto é uma página estática, sem etapa de build ou servidor de aplicaçã
 | `scripts/import-president.js` | Extrator em fluxo do CSV nacional do TSE e validador do recorte presidencial. |
 | `VERSION` | Versão corrente do painel, em SemVer. |
 
+Como o projeto não está conectado ao Hub e não contém um script de sincronização de versão, aplique bumps manualmente em `VERSION`, neste README e na meta `application-version` de `index.html`; depois, confira as referências da versão anterior.
+
 Os arquivos da interface precisam permanecer juntos. As folhas de estilo, os scripts e o favicon são carregados por caminhos relativos no HTML; a página pode ser aberta localmente em um navegador moderno.
 
 ## Fluxo dos dados
@@ -26,7 +28,7 @@ Os arquivos da interface precisam permanecer juntos. As folhas de estilo, os scr
 4. Votos por cargo são associados às seções para a tabela de seção; consolidados, candidatos e partidos usam seus conjuntos próprios.
 5. A exportação CSV é criada no navegador a partir das linhas filtradas na visão atual.
 
-O seletor de cargo escolhe os dados de votação. Para Presidente, os votos são exibidos por seção e candidato; a visão por partido fica oculta porque o recorte por seção não contém a classificação partidária. A base de abstenção é comum à seção e não é contada novamente para cada cargo.
+O seletor **Votos exibidos** escolhe somente os dados de votação e apresenta uma orientação contextual: a base de aptos, comparecimento e abstenção é comum à seção e não muda com o cargo. Para Presidente, a visão por partido fica oculta porque o recorte por seção não contém a classificação partidária. A ordenação das tabelas usa botões acessíveis por teclado e comunica a coluna e a direção com `aria-sort`.
 
 ## Persistência e rede
 
@@ -36,4 +38,4 @@ Os CSVs de origem não são atualizados automaticamente. Para atualizar os cargo
 
 ## Verificação manual
 
-Após atualizar o HTML, mantenha os arquivos CSS e JavaScript ao lado dele e abra-o em um navegador. Confira filtros geográficos, alternância de cargo, indicadores de abstenção, busca, ordenação, paginação e exportação. Compare os totais com os consolidados oficiais antes de distribuir os arquivos.
+Após atualizar o HTML, mantenha os arquivos CSS e JavaScript ao lado dele e abra-o em um navegador. Confira filtros geográficos, orientação contextual do cargo (incluindo Presidente), indicadores de abstenção, busca, ordenação com mouse e teclado, estado `aria-sort`, paginação e exportação. Em celular, confirme que a página não cria rolagem horizontal e que a tabela mantém rolagem própria. Compare os totais com os consolidados oficiais antes de distribuir os arquivos.

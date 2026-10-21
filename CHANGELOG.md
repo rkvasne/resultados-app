@@ -4,6 +4,8 @@ Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelo
 
 ## [Não lançado]
 
+## [0.0.2] - 2026-10-21
+
 ### Adicionado
 
 - Votos presidenciais por seção, candidato e município/zona, extraídos em fluxo do CSV nacional do TSE para as 409 seções das zonas 3 e 30.
@@ -13,11 +15,19 @@ Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelo
 ### Alterado
 
 - Clarificados o rótulo e o efeito do seletor de cargo; a visão por partido é ocultada para Presidente, que não tem classificação partidária no recorte por seção.
+- Separados visualmente os filtros geográficos do controle de votos exibidos, com orientação contextual que reforça que o cargo não altera a abstenção.
+- Melhorados contraste e tamanho dos textos auxiliares e dos rótulos dos filtros.
+- Tornada a ordenação das tabelas acessível por teclado, com botões focáveis e estado anunciado por `aria-sort`.
 - Documentados os dados presidenciais e as diferenças de comparecimento identificadas em quatro seções.
 
 ### Corrigido
 
 - Removida uma linha de CSS residual do HTML que era exibida como texto acima do painel.
+
+### Aprendizado
+
+- Fato observado: a auditoria identificou que o seletor de cargo aparecia junto aos filtros geográficos e não deixava evidente que a abstenção permanece igual.
+- Ação aplicada: o controle passou a se chamar “Votos exibidos”, ganhou orientação contextual e foi destacado dos filtros geográficos.
 
 ## [0.0.1] - 2026-10-21
 

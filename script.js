@@ -54,6 +54,16 @@ function renderMetrics() {
   $('metrics').innerHTML = metrics.map((metric, index) => `<article class="metric ${index === 3 ? 'danger' : ''}"><div class="name">${metric[0]}</div><div class="value">${metric[1]}</div><div class="sub">${metric[2]}</div></article>`).join('');
 }
 
+function updateOfficeGuidance() {
+  const help = document.querySelector('.office-field small');
+  const isPresident = $('office').value === 'Presidente';
+  help.id = 'office-help';
+  $('office').setAttribute('aria-describedby', help.id);
+  help.textContent = isPresident
+    ? 'A abstenção permanece igual. Para Presidente, não há visão por partido.'
+    : 'O cargo muda apenas os votos exibidos; a abstenção permanece igual.';
+}
+
 function dataForTab() {
   const sections = scoped();
   const office = $('office').value;
@@ -156,7 +166,12 @@ function show() {
     return `<td class="${typeof row[key] === 'number' ? 'num' : ''}">${value ?? ''}</td>`;
   }).join('') + '</tr>').join('');
   const titles = { sections: 'Abstenção e votos por seção', places: 'Consolidado por local de votação', comparison: 'Comparativo eleitoral', candidates: 'Votação nominal por candidato', parties: 'Votação por partido' };
-  $('tabcontent').innerHTML = `<section class="panel"><h2>${titles[tab]}</h2><p class="hint">${data.description}</p><div class="toolbar"><div><b>${fmt(rows.length)}</b> registros encontrados</div><div class="tools"><input class="search" id="q" value="${escapeHtml(search)}" placeholder="Buscar nome, seção, município..." aria-label="Buscar na tabela"><button class="btn" id="download">Exportar CSV filtrado</button><button class="btn" id="reset">Limpar busca</button></div></div><div class="table-wrap"><table><thead><tr>${data.columns.map(([key, label]) => `<th data-key="${key}" class="${typeof rows[0]?.[key] === 'number' ? 'num' : ''}">${label}${sortKey === key ? (sortDir === 1 ? ' ↑' : ' ↓') : ''}</th>`).join('')}</tr></thead><tbody>${body || `<tr><td colspan="${data.columns.length}">Nenhum resultado corresponde aos filtros.</td></tr>`}</tbody></table></div><div class="page-controls"><span>Página ${page + 1} de ${totalPages} · Até 50 registros por página</span><div class="tools"><button class="btn" id="prev" ${page === 0 ? 'disabled' : ''}>Anterior</button><button class="btn" id="next" ${page >= totalPages - 1 ? 'disabled' : ''}>Próxima</button></div></div></section>`;
+  $('tabcontent').innerHTML = `<section class="panel"><h2>${titles[tab]}</h2><p class="hint">${data.description}</p><div class="toolbar"><div><b>${fmt(rows.length)}</b> registros encontrados</div><div class="tools"><input class="search" id="q" value="${escapeHtml(search)}" placeholder="Buscar nome, seção, município..." aria-label="Buscar na tabela"><button class="btn" id="download">Exportar CSV filtrado</button><button class="btn" id="reset">Limpar busca</button></div></div><div class="table-wrap"><table><thead><tr>${data.columns.map(([key, label]) => {
+    const isSorted = sortKey === key;
+    const direction = sortDir === 1 ? 'ascending' : 'descending';
+    const indicator = isSorted ? (sortDir === 1 ? '↑' : '↓') : '';
+    return `<th data-key="${key}" class="${typeof rows[0]?.[key] === 'number' ? 'num' : ''}" aria-sort="${isSorted ? direction : 'none'}"><button class="sort-button" type="button" aria-label="Ordenar por ${label}">${label}<span aria-hidden="true">${indicator}</span></button></th>`;
+  }).join('')}</tr></thead><tbody>${body || `<tr><td colspan="${data.columns.length}">Nenhum resultado corresponde aos filtros.</td></tr>`}</tbody></table></div><div class="page-controls"><span>Página ${page + 1} de ${totalPages} · Até 50 registros por página</span><div class="tools"><button class="btn" id="prev" ${page === 0 ? 'disabled' : ''}>Anterior</button><button class="btn" id="next" ${page >= totalPages - 1 ? 'disabled' : ''}>Próxima</button></div></div></section>`;
   $('q').addEventListener('input', event => {
     search = event.target.value;
     page = 0;
@@ -191,7 +206,7 @@ function download() {
 }
 
 for (const id of ['zone', 'city']) $(id).onchange = () => { updatePlaces(); page = 0; show(); };
-for (const id of ['place', 'office']) $(id).onchange = () => { page = 0; show(); };
+for (const id of ['place', 'office']) $(id).onchange = () => { page = 0; if (id === 'office') updateOfficeGuidance(); show(); };
 document.querySelectorAll('.tab').forEach(element => element.onclick = () => {
   tab = element.dataset.tab;
   document.querySelectorAll('.tab').forEach(button => button.classList.toggle('active', button === element));
@@ -202,4 +217,6 @@ document.querySelectorAll('.tab').forEach(element => element.onclick = () => {
   show();
 });
 updatePlaces();
+document.querySelector('label[for="office"]').textContent = 'Votos exibidos';
+updateOfficeGuidance();
 show();
