@@ -4,6 +4,13 @@ Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelo
 
 ## [Não lançado]
 
+## [0.0.3] - 2026-10-21
+
+### Alterado
+
+- Reordenada a lista de cargos do maior para o menor: Presidente, Governador, Senador, Deputado Federal e Deputado Estadual.
+- Compactados filtros, indicadores e espaçamentos para dar mais destaque às tabelas e aos resultados.
+
 ## [0.0.2] - 2026-10-21
 
 ### Adicionado

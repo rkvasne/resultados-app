@@ -28,7 +28,7 @@ Os arquivos da interface precisam permanecer juntos. As folhas de estilo, os scr
 4. Votos por cargo são associados às seções para a tabela de seção; consolidados, candidatos e partidos usam seus conjuntos próprios.
 5. A exportação CSV é criada no navegador a partir das linhas filtradas na visão atual.
 
-O seletor **Votos exibidos** escolhe somente os dados de votação e apresenta uma orientação contextual: a base de aptos, comparecimento e abstenção é comum à seção e não muda com o cargo. Para Presidente, a visão por partido fica oculta porque o recorte por seção não contém a classificação partidária. A ordenação das tabelas usa botões acessíveis por teclado e comunica a coluna e a direção com `aria-sort`.
+O seletor **Votos exibidos** escolhe somente os dados de votação, lista os cargos do maior para o menor e apresenta uma orientação contextual: a base de aptos, comparecimento e abstenção é comum à seção e não muda com o cargo. Para Presidente, a visão por partido fica oculta porque o recorte por seção não contém a classificação partidária. Filtros e indicadores usam espaçamentos compactos para priorizar o conteúdo tabular. A ordenação das tabelas usa botões acessíveis por teclado e comunica a coluna e a direção com `aria-sort`.
 
 ## Persistência e rede
 

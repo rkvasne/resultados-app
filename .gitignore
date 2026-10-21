@@ -17,3 +17,4 @@
 # Telemetria de sessão fica local; snapshots são versionados no checkpoint.
 /telemetry/usage.json
 /telemetry/prompt-lifecycle.json
+/telemetry/events-archive.jsonl

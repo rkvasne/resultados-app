@@ -13,6 +13,15 @@ let search = '';
 let rowsCurrent = [];
 let colCurrent = [];
 
+const officeOrder = ['Presidente', 'Governador', 'Senador', 'Deputado Federal', 'Deputado Estadual'];
+
+function orderOfficeOptions() {
+  const select = $('office');
+  const options = [...select.options];
+  options.sort((first, second) => officeOrder.indexOf(first.value || first.textContent) - officeOrder.indexOf(second.value || second.textContent));
+  select.replaceChildren(...options);
+}
+
 function scope(row) {
   return (!$('zone').value || String(row.z) === $('zone').value) && (!$('city').value || row.mun === $('city').value);
 }
@@ -216,6 +225,7 @@ document.querySelectorAll('.tab').forEach(element => element.onclick = () => {
   search = '';
   show();
 });
+orderOfficeOptions();
 updatePlaces();
 document.querySelector('label[for="office"]').textContent = 'Votos exibidos';
 updateOfficeGuidance();

@@ -180,10 +180,9 @@
 
 .office-field {
   align-self: start;
-  padding: 10px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: var(--bg);
+  padding: 0;
+  border: 0;
+  background: transparent;
 }
 
 .office-field small {
@@ -233,8 +232,48 @@ th {
   padding: 0;
 }
 
+.filters {
+  padding: 12px 14px;
+  gap: 10px;
+}
+
+.filters select {
+  height: 38px;
+}
+
+.metrics {
+  gap: 9px;
+  margin: 10px 0;
+}
+
+.metric {
+  padding: 11px 14px;
+}
+
+.metric .value {
+  font-size: clamp(19px, 2vw, 25px);
+  margin-top: 2px;
+}
+
+.metric .sub {
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.tabs {
+  margin: 11px 0;
+}
+
 @media (max-width: 480px) {
   .office-field {
     grid-column: 1 / -1;
+  }
+
+  .filters {
+    padding: 10px;
+  }
+
+  .metric {
+    padding: 10px;
   }
 }

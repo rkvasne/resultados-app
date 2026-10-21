@@ -4,7 +4,7 @@ Painel estático e offline para consultar abstenção por seção e resultados e
 
 **Eleição:** 1º turno das Eleições Gerais de 2026, em 4 de outubro de 2026  
 **Escopo:** Ji-Paraná e Presidente Médici, conforme a zona eleitoral  
-**Versão:** 0.0.2  
+**Versão:** 0.0.3  
 **Documentação revisada em:** 21 de outubro de 2026
 
 ## Começar
@@ -29,7 +29,7 @@ Não é necessário instalar dependências, configurar servidor, criar `.env.loc
 - Busca, ordenação de colunas, paginação e exportação dos resultados filtrados em CSV.
 - Consulta offline, sem envio dos dados a um servidor.
 
-O seletor **Votos exibidos** altera somente os resultados de votação, incluindo Presidente. A orientação junto ao controle reforça que aptos, comparecimento e abstenção continuam usando a mesma base por seção, independentemente do cargo. Para Presidente, estão disponíveis as visões por seção, comparação e candidatos; a visão por partido não se aplica porque o recorte por seção não traz essa classificação. A ordenação das tabelas pode ser acionada por teclado.
+O seletor **Votos exibidos** lista os cargos do maior para o menor: Presidente, Governador, Senador, Deputado Federal e Deputado Estadual. Ele altera somente os resultados de votação; aptos, comparecimento e abstenção continuam usando a mesma base por seção. Para Presidente, estão disponíveis as visões por seção, comparação e candidatos; a visão por partido não se aplica porque o recorte por seção não traz essa classificação. Os filtros e indicadores foram compactados para dar mais destaque às tabelas. A ordenação das tabelas pode ser acionada por teclado.
 
 ## Dados e limites
 
