@@ -1,0 +1,14 @@
+# Arquivos de origem do TSE; o painel usa apenas os dados recortados em index.html.
+/detalhe_votacao_munzona_2026/
+/detalhe_votacao_secao_2026/
+/votacao_candidato_munzona_2026/
+/votacao_partido_munzona_2026/
+/votacao_secao_2026_BR/
+/*.zip
+
+# Arquivos locais e temporários.
+/.env
+/.env.*
+!/.env.example
+/.DS_Store
+/Thumbs.db

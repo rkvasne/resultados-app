@@ -1,0 +1,171 @@
+@media (max-width: 760px) {
+  .wrap {
+    padding: 16px;
+  }
+
+  header {
+    padding: 24px max(16px, 4vw);
+  }
+
+  .filters,
+  .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 0 0 6px;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tab {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .toolbar {
+    align-items: stretch;
+  }
+
+  .toolbar > div:first-child {
+    align-self: center;
+  }
+
+  .tools {
+    width: 100%;
+  }
+
+  .search {
+    min-width: 0;
+    flex: 1 1 100%;
+  }
+
+  .btn {
+    min-height: 44px;
+  }
+
+  .page-controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .page-controls .tools {
+    width: 100%;
+  }
+
+  .table-wrap {
+    max-height: 65vh;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  th,
+  td {
+    padding: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .wrap {
+    padding: 10px;
+  }
+
+  header {
+    padding: 20px 14px;
+  }
+
+  .eyebrow {
+    font-size: 10px;
+  }
+
+  .filters {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    padding: 12px;
+  }
+
+  select {
+    min-width: 0;
+    min-height: 44px;
+  }
+
+  .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .metric {
+    min-width: 0;
+    padding: 11px;
+  }
+
+  .metric .name {
+    font-size: 11px;
+  }
+
+  .metric .value {
+    font-size: clamp(18px, 6vw, 23px);
+    overflow-wrap: anywhere;
+  }
+
+  .metric .sub {
+    font-size: 10px;
+  }
+
+  .tabs {
+    gap: 6px;
+    margin: 12px 0;
+  }
+
+  .tab {
+    padding: 10px 12px;
+  }
+
+  .panel {
+    padding: 12px;
+  }
+
+  .panel h2 {
+    font-size: 16px;
+  }
+
+  .tools {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tools .search {
+    grid-column: 1 / -1;
+  }
+
+  .btn {
+    padding: 10px 8px;
+  }
+
+  .page-controls .tools {
+    display: flex;
+  }
+
+  .note {
+    padding: 12px;
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  footer {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .bar {
+    width: 64px;
+  }
+}
+
+@media (max-width: 350px) {
+  .metrics {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
