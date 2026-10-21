@@ -15,6 +15,7 @@ O projeto é uma página estática, sem etapa de build ou servidor de aplicaçã
 | `script.js` | Filtros, métricas, tabelas, ordenação, paginação e exportação CSV. |
 | `scripts/import-president.js` | Extrator em fluxo do CSV nacional do TSE e validador do recorte presidencial. |
 | `VERSION` | Versão corrente do painel, em SemVer. |
+| `.vercelignore` | Limita o deploy aos arquivos estáticos necessários e exclui os CSVs brutos locais. |
 
 Como o projeto não está conectado ao Hub e não contém um script de sincronização de versão, aplique bumps manualmente em `VERSION`, neste README e na meta `application-version` de `index.html`; depois, confira as referências da versão anterior.
 

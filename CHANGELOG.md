@@ -4,6 +4,12 @@ Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelo
 
 ## [Não lançado]
 
+## [0.0.4] - 2026-10-21
+
+### Corrigido
+
+- Limitado o pacote de deploy da Vercel aos arquivos necessários para servir o painel, excluindo os CSVs brutos que excediam o limite de upload.
+
 ## [0.0.3] - 2026-10-21
 
 ### Alterado

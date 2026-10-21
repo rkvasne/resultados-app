@@ -4,7 +4,7 @@ Painel estático e offline para consultar abstenção por seção e resultados e
 
 **Eleição:** 1º turno das Eleições Gerais de 2026, em 4 de outubro de 2026  
 **Escopo:** Ji-Paraná e Presidente Médici, conforme a zona eleitoral  
-**Versão:** 0.0.3  
+**Versão:** 0.0.4  
 **Documentação revisada em:** 21 de outubro de 2026
 
 ## Começar
@@ -17,6 +17,7 @@ Mantenha os arquivos da interface na mesma pasta e abra o HTML em um navegador a
 - [`presidente_2026.js`](presidente_2026.js)
 - [`script.js`](script.js)
 - [`favicon.svg`](favicon.svg)
+- [`.vercelignore`](.vercelignore)
 
 Não é necessário instalar dependências, configurar servidor, criar `.env.local` nem importar CSVs para abrir o painel. Os estilos, a lógica e o recorte presidencial são carregados de arquivos locais; os demais dados ficam incorporados ao HTML.
 

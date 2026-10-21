@@ -18,3 +18,5 @@
 /telemetry/usage.json
 /telemetry/prompt-lifecycle.json
 /telemetry/events-archive.jsonl
+
+.vercel
