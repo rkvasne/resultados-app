@@ -4,7 +4,7 @@ Painel independente, estático e offline para consultar abstenção por seção 
 
 **Eleição:** 1º turno das Eleições Gerais de 2026, em 4 de outubro de 2026  
 **Escopo:** Ji-Paraná e Presidente Médici, conforme a zona eleitoral  
-**Versão:** 0.0.5  
+**Versão:** 0.0.6  
 **Documentação revisada em:** 21 de outubro de 2026
 
 ## Começar

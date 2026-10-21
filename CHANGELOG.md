@@ -4,6 +4,13 @@ Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelo
 
 ## [Não lançado]
 
+## [0.0.6] - 2026-10-21
+
+### Aprendizado
+
+- Fato observado: o repositório não possui manifesto de dependências nem runner de testes; as verificações disponíveis são sintaxe, validação do importador e checagem visual no navegador.
+- Ação aplicada: registrar no guia de arquitetura os limites e os checks disponíveis para os próximos checkpoints.
+
 ## [0.0.5] - 2026-10-21
 
 ### Alterado

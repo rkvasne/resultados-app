@@ -42,3 +42,5 @@ Os CSVs de origem não são atualizados automaticamente. Para atualizar os cargo
 ## Verificação manual
 
 Após atualizar o HTML, mantenha os arquivos CSS e JavaScript ao lado dele e abra-o em um navegador. Confira filtros geográficos, orientação contextual do cargo (incluindo Presidente), indicadores de abstenção, busca, ordenação com mouse e teclado, estado `aria-sort`, paginação e exportação. Em celular, confirme que a página não cria rolagem horizontal e que a tabela mantém rolagem própria. Compare os totais com os consolidados oficiais antes de distribuir os arquivos.
+
+O repositório não contém `package.json`, runner de testes ou suíte automatizada. Os checks disponíveis incluem `node --check` nos scripts, prévia validada de `scripts/import-president.js` e revisão manual da página no navegador.
