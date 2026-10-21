@@ -72,7 +72,7 @@ O CSV nacional de votação por seção é grande. Ele não é necessário para 
 3. Cruze os registros usando chaves eleitorais compatíveis — incluindo eleição, turno, UF, município, zona e seção quando disponíveis.
 4. Preserve a base de aptos, comparecimento e abstenções uma única vez por seção. Não some as abstenções repetidas entre cargos.
 5. Compare os totais por município/zona com os consolidados oficiais e registre a fonte e o tratamento em `docs/data-sources.md`.
-6. Atualize o JSON do HTML, a interface e este changelog juntos. Mantenha os três arquivos do painel na mesma pasta.
+6. Atualize o JSON do HTML, a interface e este changelog juntos. Mantenha os quatro arquivos do painel na mesma pasta.
 
 ## Configuração e privacidade
 

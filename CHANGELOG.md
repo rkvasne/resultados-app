@@ -1,6 +1,6 @@
 # Changelog
 
-Este arquivo registra mudanças relevantes do painel. O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/). Como o projeto ainda não publica versões numeradas, as alterações atuais ficam em `Unreleased`.
+Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/). A primeira versão publicada é `0.0.1`.
 
 ## [0.0.1] - 2026-10-21
 
@@ -8,7 +8,7 @@ Este arquivo registra mudanças relevantes do painel. O formato segue [Keep a Ch
 
 - README, índice e guias locais de arquitetura e dados.
 - Registro explícito de que Presidente ainda não foi integrado e de que o projeto não requer variáveis de ambiente.
-- Nomes convencionais para a página estática: `index.html`, `styles.css` e `script.js`.
+- Nomes convencionais para a página estática: `index.html`, `styles.css`, `responsive.css` e `script.js`.
 
 ### Alterado
 
