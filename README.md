@@ -9,24 +9,27 @@ Painel estático e offline para consultar abstenção por seção e resultados e
 
 ## Começar
 
-Mantenha estes quatro arquivos na mesma pasta e abra o HTML em um navegador atualizado:
+Mantenha os arquivos da interface na mesma pasta e abra o HTML em um navegador atualizado:
 
 - [`index.html`](index.html)
 - [`styles.css`](styles.css)
 - [`responsive.css`](responsive.css)
+- [`presidente_2026.js`](presidente_2026.js)
 - [`script.js`](script.js)
+- [`favicon.svg`](favicon.svg)
 
-Não é necessário instalar dependências, configurar servidor, criar `.env.local` nem importar CSVs para abrir o painel. Os arquivos CSS e JavaScript são carregados localmente; os dados consultados já estão incorporados ao HTML.
+Não é necessário instalar dependências, configurar servidor, criar `.env.local` nem importar CSVs para abrir o painel. Os estilos, a lógica e o recorte presidencial são carregados de arquivos locais; os demais dados ficam incorporados ao HTML.
 
 ## O que o painel oferece
 
 - Indicadores de eleitores aptos, comparecimento, abstenções e taxa de abstenção.
 - Filtros por zona, município e local de votação.
 - Visões por seção, local, consolidados municipais, candidatos e partidos.
+- Resultados presidenciais por seção e candidato para as zonas incluídas no painel.
 - Busca, ordenação de colunas, paginação e exportação dos resultados filtrados em CSV.
 - Consulta offline, sem envio dos dados a um servidor.
 
-O seletor **Cargo dos votos exibidos** altera os dados de votação. A abstenção é calculada pela seção e permanece igual para todos os cargos.
+O seletor **Cargo para resultados de votação** altera os votos exibidos, incluindo Presidente. Abstenção, aptos e comparecimento continuam usando a base única por seção, sem serem somados novamente a cada cargo. Para Presidente, estão disponíveis as visões por seção, comparação e candidatos; a visão por partido não se aplica porque o recorte por seção não traz essa classificação.
 
 ## Dados e limites
 
@@ -34,13 +37,13 @@ O painel incorpora dados públicos do TSE para o 1º turno de 2026. A abstençã
 
 Os votos de candidatos e partidos disponíveis no painel estão agregados por município/zona. O filtro de local não transforma esses totais em resultados por seção. A lista de seções apuradas também não deve ser interpretada como uma lista de urnas físicas: seções agregadas e outras situações de apuração podem alterar essa correspondência.
 
-**Presidente ainda não está integrado ao painel.** O CSV nacional de votação por seção está disponível no repositório, mas os seus votos não foram filtrados para as duas zonas nem incorporados aos dados da página. A base de comparecimento por seção já usada pelo painel permite exibir a abstenção ao lado dos votos presidenciais depois que esses resultados forem processados e cruzados com as seções corretas. Consulte [Fontes e tratamento dos dados](docs/data-sources.md).
+Os votos presidenciais foram extraídos do CSV nacional por seção e cruzados com as 409 seções disponíveis para as Zonas 3 e 30. O recorte local fica em `presidente_2026.js`; o CSV nacional não é carregado pelo navegador. Quatro seções apresentam pequenas diferenças entre a soma dos votos presidenciais e o comparecimento da base estadual. Essas diferenças são preservadas e documentadas; não alteram aptos, comparecimento ou abstenções do painel. Consulte [Fontes e tratamento dos dados](docs/data-sources.md).
 
 ## Onde os dados ficam
 
-Os dados que o navegador consulta estão serializados em JSON dentro do elemento `<script id="data" type="application/json">` no HTML. O JavaScript lê esse bloco; CSS, JavaScript e dados permanecem no computador do usuário durante a consulta. A página não usa `localStorage`, banco de dados ou serviço remoto para guardar os resultados.
+Os dados dos cargos estaduais estão serializados em JSON no elemento `<script id="data" type="application/json">` do HTML. O recorte presidencial fica no arquivo local `presidente_2026.js`. A página carrega ambos junto aos estilos e à lógica JavaScript; não usa `localStorage`, banco de dados ou serviço remoto para guardar os resultados.
 
-Os CSVs de origem ficam nas pastas de dados listadas em [Fontes e tratamento dos dados](docs/data-sources.md). Eles não são carregados automaticamente pelo painel. Para atualizar os resultados, é necessário processar as fontes e atualizar o JSON incorporado ao HTML.
+Os CSVs de origem ficam nas pastas de dados listadas em [Fontes e tratamento dos dados](docs/data-sources.md). Eles não são carregados pelo painel. Para atualizar o recorte presidencial, use `node scripts/import-president.js --write` com o CSV nacional no caminho padrão.
 
 ## Estrutura
 
@@ -49,7 +52,9 @@ Os CSVs de origem ficam nas pastas de dados listadas em [Fontes e tratamento dos
 ├── index.html                             # Interface e dados JSON incorporados
 ├── styles.css                             # Estilos base
 ├── responsive.css                         # Ajustes para tablet e celular
+├── presidente_2026.js                     # Recorte local de votos presidenciais
 ├── script.js                              # Filtros, tabelas e exportação
+├── scripts/import-president.js            # Extrator em fluxo do CSV nacional do TSE
 ├── detalhe_votacao_secao_2026/            # Apuração por seção de RO
 ├── detalhe_votacao_munzona_2026/          # Consolidados por município/zona
 ├── votacao_candidato_munzona_2026/        # Votos por candidato e município/zona
@@ -60,10 +65,11 @@ Os CSVs de origem ficam nas pastas de dados listadas em [Fontes e tratamento dos
 ├── CHANGELOG.md
 ├── VERSION
 ├── .gitignore
-└── .env.example
+├── .env.example
+└── favicon.svg
 ```
 
-O CSV nacional de votação por seção é grande. Ele não é necessário para abrir o painel e não deve ser incorporado integralmente ao HTML; extraia apenas os registros necessários antes de integrar um novo cargo.
+O CSV nacional de votação por seção é grande. Ele não é necessário para abrir o painel; `scripts/import-president.js` extrai somente Presidente nas seções cobertas e gera o arquivo local compacto `presidente_2026.js`.
 
 ## Atualizar os dados
 
@@ -72,7 +78,7 @@ O CSV nacional de votação por seção é grande. Ele não é necessário para 
 3. Cruze os registros usando chaves eleitorais compatíveis — incluindo eleição, turno, UF, município, zona e seção quando disponíveis.
 4. Preserve a base de aptos, comparecimento e abstenções uma única vez por seção. Não some as abstenções repetidas entre cargos.
 5. Compare os totais por município/zona com os consolidados oficiais e registre a fonte e o tratamento em `docs/data-sources.md`.
-6. Atualize o JSON do HTML, a interface e este changelog juntos. Mantenha os quatro arquivos do painel na mesma pasta.
+6. Atualize o recorte local, a interface e este changelog juntos. Mantenha todos os arquivos da interface na mesma pasta.
 
 ## Configuração e privacidade
 

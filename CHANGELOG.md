@@ -2,6 +2,23 @@
 
 Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/). A primeira versão publicada é `0.0.1`.
 
+## [Não lançado]
+
+### Adicionado
+
+- Votos presidenciais por seção, candidato e município/zona, extraídos em fluxo do CSV nacional do TSE para as 409 seções das zonas 3 e 30.
+- Script de importação com validação de cobertura e totais, sem carregar o CSV nacional na interface.
+- Favicon local para evitar a requisição de um ícone inexistente.
+
+### Alterado
+
+- Clarificados o rótulo e o efeito do seletor de cargo; a visão por partido é ocultada para Presidente, que não tem classificação partidária no recorte por seção.
+- Documentados os dados presidenciais e as diferenças de comparecimento identificadas em quatro seções.
+
+### Corrigido
+
+- Removida uma linha de CSS residual do HTML que era exibida como texto acima do painel.
+
 ## [0.0.1] - 2026-10-21
 
 ### Adicionado

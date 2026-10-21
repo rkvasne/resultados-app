@@ -1,4 +1,5 @@
 const DATA = JSON.parse(document.getElementById('data').textContent);
+const PRESIDENT_DATA = window.PRESIDENT_DATA;
 const $ = id => document.getElementById(id);
 const fmt = n => new Intl.NumberFormat('pt-BR').format(n || 0);
 const pct = (a, b) => b ? 100 * a / b : 0;
@@ -57,11 +58,14 @@ function dataForTab() {
   const sections = scoped();
   const office = $('office').value;
   if (tab === 'sections') {
-    const votes = new Map(DATA.votes.filter(row => row.cargo === office).map(row => [[row.z, row.mun, row.sec].join('|'), row]));
+    const voteRows = office === 'Presidente' ? PRESIDENT_DATA.sections : DATA.votes;
+    const votes = new Map(voteRows.filter(row => row.cargo === office).map(row => [[row.z, row.mun, row.sec].join('|'), row]));
     return {
       columns: [['z', 'ZE'], ['mun', 'Município'], ['sec', 'Seção'], ['local', 'Local nº'], ['nome', 'Local de votação'], ['apt', 'Aptos'], ['comp', 'Comparecimento'], ['abs', 'Abstenções'], ['rate', 'Abstenção %'], ['br', 'Brancos'], ['nu', 'Nulos'], ['nom', 'Nominais'], ['leg', 'Legenda'], ['bu', 'Recebimento do BU']],
       rows: sections.map(row => ({ ...row, ...(votes.get([row.z, row.mun, row.sec].join('|')) || {}), rate: pct(row.abs, row.apt) })),
-      description: `Abstenção da seção, independente do cargo. Votos de ${office} na mesma seção. Clique nos títulos das colunas para ordenar.`
+      description: office === 'Presidente'
+        ? `Abstenção da seção, independente do cargo. Votos de Presidente na mesma seção. A soma dos votos diverge do comparecimento em ${PRESIDENT_DATA.comparisonMismatches.length} seções; os totais de cada fonte foram preservados.`
+        : `Abstenção da seção, independente do cargo. Votos de ${office} na mesma seção. Clique nos títulos das colunas para ordenar.`
     };
   }
   if (tab === 'places') {
@@ -80,6 +84,26 @@ function dataForTab() {
     }
     return { columns: [['z', 'ZE'], ['mun', 'Município'], ['local', 'Local nº'], ['nome', 'Nome do local'], ['sec', 'Seções'], ['apt', 'Aptos'], ['comp', 'Comparecimento'], ['abs', 'Abstenções'], ['rate', 'Abstenção %'], ['end', 'Endereço']], rows: [...byPlace.values()].map(row => ({ ...row, rate: pct(row.abs, row.apt) })), description: 'Consolidação das seções por local. Percentuais ponderados pelo número de eleitores aptos.' };
   }
+  if (tab === 'comparison' && office === 'Presidente') {
+    const matches = PRESIDENT_DATA.municipalities.filter(scopeMunicipality);
+    const groups = matches.map(row => ({ ...row, validos: row.nom, rate: pct(row.abs, row.apt) }));
+    const byZone = new Map();
+    for (const row of matches) {
+      let zone = byZone.get(row.z);
+      if (!zone) {
+        zone = { z: row.z, mun: 'TOTAL DA ZONA', apt: 0, comp: 0, abs: 0, nom: 0, br: 0, nu: 0, validos: 0 };
+        byZone.set(row.z, zone);
+      }
+      for (const key of ['apt', 'comp', 'abs', 'nom', 'br', 'nu']) zone[key] += row[key];
+      zone.validos += row.nom;
+    }
+    if (!$('place').value) groups.push(...[...byZone.values()].map(row => ({ ...row, rate: pct(row.abs, row.apt) })));
+    return {
+      columns: [['z', 'ZE'], ['mun', 'Abrangência'], ['apt', 'Aptos'], ['comp', 'Comparecimento'], ['abs', 'Abstenções'], ['rate', 'Abstenção %'], ['validos', 'Votos válidos'], ['br', 'Brancos'], ['nu', 'Nulos']],
+      rows: groups,
+      description: 'Votos presidenciais consolidados pelas seções disponíveis. Aptos, comparecimento e abstenções usam a base única do painel.'
+    };
+  }
   if (tab === 'comparison') {
     const matches = DATA.municipal.filter(row => row.cargo === office && scopeMunicipality(row));
     const groups = matches.map(row => ({ ...row, rate: pct(row.abs, row.apt), turn: 'Município / ZE' }));
@@ -95,6 +119,7 @@ function dataForTab() {
     if (!$('place').value) groups.push(...[...byZone.values()].map(row => ({ ...row, rate: pct(row.abs, row.apt) })));
     return { columns: [['z', 'ZE'], ['mun', 'Abrangência'], ['apt', 'Aptos'], ['comp', 'Comparecimento'], ['abs', 'Abstenções'], ['rate', 'Abstenção %'], ['principais', 'Seções principais'], ['agregadas', 'Seções agregadas'], ['validos', 'Votos válidos'], ['br', 'Brancos'], ['nu', 'Nulos'], ['anulados', 'Anulados']], rows: groups, description: `Consolidados oficiais por município/zona. Votos válidos, brancos e nulos correspondem a ${office}.` };
   }
+  if (tab === 'candidates' && office === 'Presidente') return { columns: [['z', 'ZE'], ['mun', 'Município'], ['num', 'Número'], ['nome', 'Candidato'], ['votos', 'Votos nominais']], rows: PRESIDENT_DATA.candidates.filter(scopeMunicipality), description: 'Votos presidenciais nominais agregados por município/zona. O filtro de local não desagrega esses votos.' };
   if (tab === 'candidates') return { columns: [['z', 'ZE'], ['mun', 'Município'], ['num', 'Número'], ['nome', 'Candidato'], ['partido', 'Partido'], ['votos', 'Votos totais'], ['validos', 'Votos válidos'], ['dest', 'Destinação'], ['sit', 'Situação']], rows: DATA.candidates.filter(row => row.cargo === office && scopeMunicipality(row)), description: `Votação de candidatos a ${office}, agregada por município/zona. O filtro de local não desagrega esses votos.` };
   return { columns: [['z', 'ZE'], ['mun', 'Município'], ['num', 'Número'], ['partido', 'Partido'], ['leg', 'Votos de legenda válidos'], ['nom', 'Nominais válidos'], ['total', 'Total válido']], rows: DATA.parties.filter(row => row.cargo === office && scopeMunicipality(row)).map(row => ({ ...row, total: row.leg + row.nom })), description: `Votação por partido para ${office}, agregada por município/zona.` };
 }
@@ -110,6 +135,11 @@ function sortRows(rows) {
 }
 
 function show() {
+  const presidentSelected = $('office').value === 'Presidente';
+  const partiesTab = document.querySelector('[data-tab="parties"]');
+  partiesTab.classList.toggle('hidden', presidentSelected);
+  if (presidentSelected && tab === 'parties') tab = 'sections';
+  document.querySelectorAll('.tab').forEach(element => element.classList.toggle('active', element.dataset.tab === tab));
   renderMetrics();
   const data = dataForTab();
   let rows = data.rows.filter(row => !search || Object.values(row).some(value => String(value).toLocaleLowerCase('pt-BR').includes(search)));

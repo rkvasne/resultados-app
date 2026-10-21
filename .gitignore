@@ -1,4 +1,4 @@
-# Arquivos de origem do TSE; o painel usa apenas os dados recortados em index.html.
+# Arquivos de origem do TSE; o painel usa apenas os recortes locais já processados.
 /detalhe_votacao_munzona_2026/
 /detalhe_votacao_secao_2026/
 /votacao_candidato_munzona_2026/
@@ -12,3 +12,4 @@
 !/.env.example
 /.DS_Store
 /Thumbs.db
+/.playwright-mcp/
