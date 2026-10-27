@@ -4,19 +4,21 @@
 
 O painel foi montado a partir de arquivos públicos de resultados do Tribunal Superior Eleitoral (TSE), referentes aos turnos de 4 e 25 de outubro das Eleições Gerais de 2026. O escopo é Rondônia, Zonas Eleitorais 3 e 30: Ji-Paraná e Presidente Médici na 3ª ZE; Ji-Paraná na 30ª ZE. Os resultados do primeiro turno estão em `index.html`; os recortes presidenciais ficam em `presidente_2026.js` e `presidente_2026_2t.js`.
 
-O histórico registra a página [Resultados 2026 — Dados Abertos do TSE](https://dadosabertos.tse.jus.br/dataset/resultados-2026) como referência para os conjuntos. Confirme a eleição, o turno e a abrangência nos próprios arquivos antes de processar uma nova extração.
+O portal principal é o [Portal de Dados Abertos do TSE](https://dadosabertos.tse.jus.br/). O conjunto usado pelo painel é [Resultados — 2026](https://dadosabertos.tse.jus.br/dataset/resultados-2026). Os arquivos oficiais são distribuídos pelo CDN do TSE e atualizados ao final de cada turno; os importadores filtram o código da eleição, turno, cargo, UF, zona e data dentro do arquivo baixado.
+
+Os links do CDN apontam para o recurso oficial atual, que pode ser substituído quando o TSE publica uma nova apuração. O relatório registra também os campos de geração internos do CSV (`DT_GERACAO` e `HH_GERACAO`) para caracterizar o snapshot efetivamente usado.
 
 ## Arquivos de origem no projeto
 
-| Conjunto | Pasta/arquivo | Granularidade e uso |
+| Uso no painel | Arquivo oficial no CDN do TSE | Dados derivados |
 | --- | --- | --- |
-| Detalhe da votação por seção | `docs/detalhe_votacao_secao_2026/` | Aptos, comparecimento, abstenções e resultados por seção para os cargos estaduais. Base dos indicadores de abstenção. |
-| Detalhe da votação por município/zona | `docs/detalhe_votacao_munzona_2026/` | Consolidados oficiais e estatísticas por município/zona. Usado para comparações e conferência dos totais. |
-| Votação por candidato e município/zona | `docs/votacao_candidato_munzona_2026/` | Votos de candidatos agregados por município/zona. Não permite detalhamento por seção ou local. |
-| Votação por partido e município/zona | `docs/votacao_partido_munzona_2026/` | Votos nominais e de legenda agregados por município/zona. |
-| Votação por seção no Brasil | `docs/votacao_secao_2026_BR/votacao_secao_2026_BR.csv` | Fonte nacional, processada em fluxo para extrair apenas Presidente nas zonas 3 e 30. O recorte compacto usado pela interface está em `presidente_2026.js`. |
-| Votação por seção no Brasil, pacote `_2t` | `docs/votacao_secao_2026_BR_2t/votacao_secao_2026_BR.csv` | Contém dados dos dois turnos; o extrator seleciona eleição `6258`, turno `2`, Presidente e a data `25/10/2026`. |
-| Detalhe por seção, pacote `_2t` | `docs/detalhe_votacao_secao_2026_2t/detalhe_votacao_secao_2026_BR.csv` | Base presidencial de aptos, comparecimento e abstenções do segundo turno; inclui 409 seções para as ZEs 3 e 30. |
+| Seções, comparecimento, abstenção e votos dos cargos estaduais | [detalhe_votacao_secao_2026.zip](https://cdn.tse.jus.br/estatistica/sead/odsele/detalhe_votacao_secao/detalhe_votacao_secao_2026.zip) | Base por seção do 1º turno; os campos de aptos, comparecimento e abstenções alimentam cartões, tabelas, locais e relatórios. |
+| Votos de Presidente por seção | [votacao_secao_2026_BR.zip](https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_secao/votacao_secao_2026_BR.zip) | Votos presidenciais por seção e candidato. O recurso é atualizado ao fim de cada turno; a extração filtra eleição, turno, cargo e as ZEs 3 e 30. |
+| Comparecimento presidencial do 2º turno | [detalhe_votacao_secao_2026.zip](https://cdn.tse.jus.br/estatistica/sead/odsele/detalhe_votacao_secao/detalhe_votacao_secao_2026.zip) | Aptos, comparecimento e abstenções do 2º turno de Presidente. As cópias locais usadas na extração são snapshots do pacote, filtradas para eleição `6258`, turno `2`, data `25/10/2026`, RO e zonas 3 e 30. |
+| Comparativos oficiais por município/zona | [detalhe_votacao_munzona_2026.zip](https://cdn.tse.jus.br/estatistica/sead/odsele/detalhe_votacao_munzona/detalhe_votacao_munzona_2026.zip) | Consolidados oficiais utilizados na visão Comparativo dos cargos estaduais. |
+| Visão Candidatos dos cargos estaduais | [votacao_candidato_munzona_2026.zip](https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_candidato_munzona/votacao_candidato_munzona_2026.zip) | Votação de candidatos por município/zona; não detalha seção nem local. |
+| Visão Partidos dos cargos estaduais | [votacao_partido_munzona_2026.zip](https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_partido_munzona/votacao_partido_munzona_2026.zip) | Votos nominais e de legenda agregados por município/zona. |
+| Catálogo dos conjuntos | [Portal de Dados Abertos do TSE](https://dadosabertos.tse.jus.br/) · [Resultados — 2026](https://dadosabertos.tse.jus.br/dataset/resultados-2026) | Página principal e metadados oficiais dos recursos acima. |
 
 Os arquivos compactados e diretórios de dados brutos ficam sob `docs/` e não são lidos pelo painel em tempo de execução.
 
@@ -32,9 +34,9 @@ abstenções ÷ eleitores aptos × 100
 
 ### Identificação das fontes no relatório
 
-O relatório de seções selecionadas informa o catálogo do TSE, código da eleição, turno, data, UF, zonas e números das seções. Também identifica separadamente o arquivo usado para aptos/comparecimento/abstenções e, quando aplicável, o arquivo de votação presidencial por seção. Para esses conjuntos, exibe `DT_GERACAO` e `HH_GERACAO` registrados nos CSVs. A data/hora de geração do relatório é apresentada à parte e não deve ser confundida com a geração das bases.
+O relatório de comparecimento/abstenção informa o catálogo do TSE, código da eleição, turno, data, UF, zonas e números das seções, além do link direto para o ZIP de detalhe por seção que fornece os indicadores. Exibe `DT_GERACAO` e `HH_GERACAO` registrados no CSV usado quando esses campos estão disponíveis. A data/hora de geração do relatório é apresentada à parte e não deve ser confundida com a geração da base.
 
-No primeiro turno dos cargos estaduais, o relatório referencia `docs/detalhe_votacao_secao_2026/detalhe_votacao_secao_2026_RO.csv`; os votos desses cargos não fazem parte do relatório de comparecimento e abstenção. Nos relatórios presidenciais, a base de comparecimento e a base de votação são explicitadas separadamente para evitar sugerir que os indicadores de presença foram calculados a partir dos votos.
+O relatório não usa os totais de votação para calcular aptos, comparecimento, abstenções ou taxas; por isso, não lista o ZIP de votação como fonte das estatísticas do PDF. Esse ZIP continua sendo utilizado nas visões de resultados por seção e candidatos presidenciais do painel.
 
 O arquivo estadual por seção apresenta registros por cargo e repete valores de comparecimento/abstenção. Para os cargos estaduais, o painel mantém uma base por seção e não soma essas repetições. Para Presidente, utiliza o detalhe específico da eleição presidencial, conforme os relatórios SISTOT. Em qualquer agregação, calcule a taxa sobre os totais de abstenções e aptos, em vez de tirar a média simples das taxas das seções.
 

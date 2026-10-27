@@ -2,6 +2,28 @@
 
 Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/). A primeira versão publicada é `0.0.1`.
 
+## [0.0.11] - 2026-10-27
+
+### Melhorado
+
+- Atualizado o título para identificar um painel independente de resultados de Rondônia e removida do relatório a expressão “Relatório independente”.
+- Exibidos no relatório os links diretos para os ZIPs oficiais do CDN do TSE e para o catálogo de Resultados 2026; o rodapé ficou reduzido ao horário de geração.
+- Reorganizados os cinco filtros em uma grade responsiva, evitando que o último filtro fique isolado em uma segunda linha no desktop.
+- Exibidos os resultados em cartões móveis com métricas essenciais e dados adicionais expansíveis; os cartões de seção são selecionáveis para o relatório, e a tabela completa permanece no desktop.
+- Adaptadas busca, exportação, seleção de seções, paginação e ordenação para uso em telas estreitas, sem rolagem horizontal da página.
+- Comunicada a aba ativa por estado acessível e preservada a seleção de seções no relatório.
+
+### Verificado
+
+- Layout conferido em 320, 390, 1024 e 1536 px; sem transbordamento horizontal da página e sem erros no console do navegador.
+- Importadores em prévia: 409/409 seções e nenhuma divergência entre votos e comparecimento nos dois turnos.
+- O repositório não possui `package.json` nem runner de testes; `npm run verify:full` não está disponível. Foram executadas as verificações manuais e de sintaxe descritas em `docs/architecture.md`.
+
+### Aprendizado
+
+- Fato observado: em 390 px, a tabela de seções ultrapassava a largura da tela e parte das abas ficava fora da área visível; no desktop, cinco filtros distribuídos em quatro colunas deixavam o último sozinho na linha seguinte.
+- Ação aplicada: cartões em telas móveis e grades responsivas para filtros, métricas e abas.
+
 ## [0.0.10] - 2026-10-27
 
 ### Alterado

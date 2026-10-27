@@ -162,9 +162,9 @@ async function main() {
   }
   const output = {
     source: 'TSE Resultados 2026 — Votação por seção no Brasil + Detalhe da votação por seção no Brasil',
-    sourceFiles: {
-      attendance: 'docs/detalhe_votacao_secao_2026_2t/detalhe_votacao_secao_2026_BR.csv',
-      votes: 'docs/votacao_secao_2026_BR/votacao_secao_2026_BR.csv'
+    sourceUrls: {
+      attendance: 'https://cdn.tse.jus.br/estatistica/sead/odsele/detalhe_votacao_secao/detalhe_votacao_secao_2026.zip',
+      votes: 'https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_secao/votacao_secao_2026_BR.zip'
     },
     sourceGeneratedAt: detailGeneratedAt,
     detailGeneratedAt,

@@ -10,7 +10,7 @@ O projeto é uma página estática, sem etapa de build ou servidor de aplicaçã
 | --- | --- |
 | `index.html` | Estrutura da página e JSON utilizado pelo painel. |
 | `styles.css` | Apresentação base e estados visuais. |
-| `responsive.css` | Ajustes de leiaute para tablets e celulares. |
+| `responsive.css` | Grades adaptáveis, cartões móveis e ajustes de leiaute para tablets e celulares. |
 | `presidente_2026.js` | Recorte presidencial do 1º turno, com comparecimento/abstenção SISTOT e votos por seção, candidato e município/zona. |
 | `presidente_2026_2t.js` | Recorte presidencial do 2º turno, com comparecimento/abstenção e votos por seção, candidato e município/zona. |
 | `script.js` | Filtros, métricas, tabelas, ordenação, paginação e exportação CSV. |
@@ -43,6 +43,6 @@ Os CSVs de origem não são atualizados automaticamente. Para atualizar os cargo
 
 ## Verificação manual
 
-Após atualizar o HTML, mantenha os arquivos CSS e JavaScript ao lado dele e abra-o em um navegador. Confira filtros geográficos, orientação contextual do cargo (incluindo Presidente), indicadores de abstenção, busca, ordenação com mouse e teclado, estado `aria-sort`, paginação e exportação. Em celular, confirme que a página não cria rolagem horizontal e que a tabela mantém rolagem própria. Compare os totais com os consolidados oficiais antes de distribuir os arquivos.
+Após atualizar o HTML, mantenha os arquivos CSS e JavaScript ao lado dele e abra-o em um navegador. Confira filtros geográficos, orientação contextual do cargo (incluindo Presidente), indicadores de abstenção, busca, ordenação com mouse, teclado e controle móvel, estado aria-sort, seleção de seções, cartões móveis, paginação e exportação. Em celular, confirme que a página não cria rolagem horizontal e que os cartões mantêm seleção e dados adicionais. Compare os totais com os consolidados oficiais antes de distribuir os arquivos.
 
 O repositório não contém `package.json`, runner de testes ou suíte automatizada; por isso `npm run verify:full` não está definido. Os checks disponíveis incluem `node --check` nos scripts, prévias validadas dos dois importadores, `git diff --check`, comparação dos totais e conferência funcional no navegador.

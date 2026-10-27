@@ -61,17 +61,13 @@ function reportSources() {
   const president = turn === '2' || $('office').value === 'Presidente';
   const data = turn === '2' ? PRESIDENT_DATA_2T : president ? PRESIDENT_DATA : null;
   if (data) {
-    const attendance = data.sourceFiles?.attendance || 'docs/detalhe_votacao_secao_2026_2t/detalhe_votacao_secao_2026_BR.csv';
-    const votes = data.sourceFiles?.votes || (turn === '2' ? 'docs/votacao_secao_2026_BR_2t/votacao_secao_2026_BR.csv' : 'docs/votacao_secao_2026_BR/votacao_secao_2026_BR.csv');
+    const attendance = data.sourceUrls?.attendance || 'https://cdn.tse.jus.br/estatistica/sead/odsele/detalhe_votacao_secao/detalhe_votacao_secao_2026.zip';
     const stamp = (date, time) => [date, time].filter(Boolean).join(' ');
-    return [
-      { label: 'Comparecimento e abstenção', file: attendance, generated: stamp(data.detailGeneratedAt, data.detailGeneratedTime) },
-      { label: 'Votação presidencial por seção', file: votes, generated: stamp(data.sourceGeneratedAt, data.sourceGeneratedTime) }
-    ];
+    return [{ label: 'Comparecimento e abstenção', url: attendance, generated: stamp(data.detailGeneratedAt, data.detailGeneratedTime) }];
   }
   return [{
     label: 'Comparecimento e abstenção por seção',
-    file: 'docs/detalhe_votacao_secao_2026/detalhe_votacao_secao_2026_RO.csv',
+    url: 'https://cdn.tse.jus.br/estatistica/sead/odsele/detalhe_votacao_secao/detalhe_votacao_secao_2026.zip',
     generated: ''
   }];
 }
@@ -87,10 +83,13 @@ function showReport() {
   const isPresident = $('turn').value === '2' || cargo === 'Presidente';
   const sources = reportSources();
   const zones = [...new Set(rows.map(row => row.z))].sort((a, b) => a - b);
-  const sourceItems = sources.map(source => `<li><strong>${escapeHtml(source.label)}:</strong> <code>${escapeHtml(source.file)}</code>${source.generated ? ` · geração informada no CSV: ${escapeHtml(source.generated)}` : ' · data de geração não registrada no recorte da página'}</li>`).join('');
+  const sourceItems = sources.map(source => {
+    const fileName = new URL(source.url).pathname.split('/').pop();
+    return `<li><strong>${escapeHtml(source.label)}:</strong> <a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(fileName)}</a>${source.generated ? ` · geração informada no CSV: ${escapeHtml(source.generated)}` : ' · data de geração não registrada no recorte da página'}</li>`;
+  }).join('');
   const electionCode = $('turn').value === '2' ? '6258' : isPresident ? '6257' : '6259';
   const sectionNumbers = rows.map(row => `${row.z}ª ZE/${row.sec}`).join(', ');
-  const sourceNote = `TSE, Dados Abertos — Resultados 2026. Eleição ${electionCode}; turno ${$('turn').value}; data ${date}; UF RO; ZE ${zones.join(', ')}; cargo ${isPresident ? '1 (Presidente)' : 'estadual'}; seção(ões): ${sectionNumbers}.`;
+  const sourceNote = `TSE, Dados Abertos — Resultados 2026. Eleição ${electionCode}; turno ${$('turn').value}; data ${date}; UF RO; ZE ${zones.join(', ')}; ${rows.length} seção(ões): ${sectionNumbers}. Os indicadores abaixo usam o detalhe por seção e não dependem dos votos do cargo.`;
   const generatedAt = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date());
   const metrics = [
     ['Seções selecionadas', fmt(rows.length)],
@@ -101,7 +100,7 @@ function showReport() {
   ];
   const body = rows.map(row => `<tr><td class="num">${row.z}</td><td>${escapeHtml(row.mun)}</td><td class="num">${fmt(row.sec)}</td><td class="num">${row.local ? fmt(row.local) : '—'}</td><td>${escapeHtml(row.nome)}</td><td class="num">${fmt(row.apt)}</td><td class="num">${fmt(row.comp)}</td><td class="num">${pf(pct(row.comp, row.apt))}</td><td class="num">${fmt(row.abs)}</td><td class="num">${pf(pct(row.abs, row.apt))}</td></tr>`).join('');
   const selectedLabel = rows.length === 1 ? '1 seção selecionada' : `${rows.length} seções selecionadas`;
-  $('report-preview').innerHTML = `<header class="report-heading"><p>Eleições Gerais 2026 · ${date}</p><h1 id="report-title">Consulta de Comparecimento e Abstenção</h1><p>${$('turn').value}º turno · Cargo para resultados: ${escapeHtml(cargo)} · ${selectedLabel}</p></header><section class="report-metrics" aria-label="Resumo das seções selecionadas">${metrics.map(([name, value]) => `<div class="report-metric"><span>${name}</span><strong>${value}</strong></div>`).join('')}</section><p class="report-method">Taxa ponderada = total de abstenções ÷ total de eleitores aptos. A média simples das taxas por seção neste recorte é ${pf(averageRate)}; ela não substitui a taxa ponderada.</p><div class="report-table-wrap"><table class="report-table"><thead><tr><th class="num">ZE</th><th>Município</th><th class="num">Seção</th><th class="num">Local nº</th><th>Local de votação</th><th class="num">Aptos</th><th class="num">Comparecimento</th><th class="num">Comparecimento %</th><th class="num">Abstenções</th><th class="num">Abstenção %</th></tr></thead><tbody>${body}</tbody></table></div><section class="report-provenance" aria-label="Fonte e critérios dos dados"><h2>Fonte e critérios dos dados</h2><p>${escapeHtml(sourceNote)} Cruzamento dos registros por zona eleitoral, município e seção.</p><ul>${sourceItems}</ul><p>Catálogo: <a href="https://dadosabertos.tse.jus.br/dataset/resultados-2026">TSE — Dados Abertos, Resultados 2026</a>. Os percentuais e totais do relatório são calculados pelo painel a partir dos totais por seção.</p></section><footer class="report-footer">Relatório independente gerado em ${generatedAt}.</footer>`;
+  $('report-preview').innerHTML = `<header class="report-heading"><p>Eleições Gerais 2026 · ${date}</p><h1 id="report-title">Consulta de Comparecimento e Abstenção</h1><p>${$('turn').value}º turno · Cargo para resultados: ${escapeHtml(cargo)} · ${selectedLabel}</p></header><section class="report-metrics" aria-label="Resumo das seções selecionadas">${metrics.map(([name, value]) => `<div class="report-metric"><span>${name}</span><strong>${value}</strong></div>`).join('')}</section><p class="report-method">Taxa ponderada = total de abstenções ÷ total de eleitores aptos. A média simples das taxas por seção neste recorte é ${pf(averageRate)}; ela não substitui a taxa ponderada.</p><div class="report-table-wrap"><table class="report-table"><thead><tr><th class="num">ZE</th><th>Município</th><th class="num">Seção</th><th class="num">Local nº</th><th>Local de votação</th><th class="num">Aptos</th><th class="num">Comparecimento</th><th class="num">Comparecimento %</th><th class="num">Abstenções</th><th class="num">Abstenção %</th></tr></thead><tbody>${body}</tbody></table></div><section class="report-provenance" aria-label="Fonte e critérios dos dados"><h2>Fonte e critérios dos dados</h2><p>${escapeHtml(sourceNote)} Cruzamento dos registros por zona eleitoral, município e seção.</p><ul>${sourceItems}</ul><p>Portal: <a href="https://dadosabertos.tse.jus.br/" target="_blank" rel="noopener noreferrer">Dados Abertos do TSE</a>. Conjunto: <a href="https://dadosabertos.tse.jus.br/dataset/resultados-2026" target="_blank" rel="noopener noreferrer">Resultados 2026</a>. Os percentuais e totais do relatório são calculados pelo painel a partir dos totais por seção.</p></section><footer class="report-footer">Gerado em ${generatedAt}.</footer>`;
   $('report-dialog').showModal();
 }
 
@@ -265,12 +264,76 @@ function sortRows(rows) {
   });
 }
 
+function mobileCardHeading(row) {
+  if (tab === 'sections') return {
+    title: `Seção ${fmt(row.sec)}`,
+    subtitle: `${row.z}ª ZE · ${row.mun}`,
+    detail: row.nome
+  };
+  if (tab === 'places') return {
+    title: row.nome,
+    subtitle: `${row.z}ª ZE · ${row.mun} · Local ${fmt(row.local)}`,
+    detail: row.end
+  };
+  if (tab === 'comparison') return {
+    title: row.mun,
+    subtitle: `${row.z}ª ZE${row.cargo ? ` · ${row.cargo}` : ''}${row.turn ? ` · ${row.turn}` : ''}`,
+    detail: ''
+  };
+  if (tab === 'candidates') return {
+    title: row.nome,
+    subtitle: `${row.num}${row.partido ? ` · ${row.partido}` : ''} · ${row.z}ª ZE · ${row.mun}`,
+    detail: ''
+  };
+  return {
+    title: row.partido,
+    subtitle: `${row.num} · ${row.z}ª ZE · ${row.mun}`,
+    detail: ''
+  };
+}
+
+function mobileCardFields(row, columns, keys) {
+  return keys.map(key => {
+    const column = columns.find(([columnKey]) => columnKey === key);
+    if (!column || row[key] === undefined || row[key] === null || row[key] === '') return '';
+    const value = key === 'rate' ? pf(row[key]) : typeof row[key] === 'number' ? fmt(row[key]) : escapeHtml(row[key]);
+    return `<div class="data-card-field"><dt>${escapeHtml(column[1])}</dt><dd>${value}</dd></div>`;
+  }).filter(Boolean).join('');
+}
+
+function renderMobileCard(row, data, selectable) {
+  const heading = mobileCardHeading(row);
+  const headingKeys = {
+    sections: ['z', 'mun', 'sec', 'nome'],
+    places: ['z', 'mun', 'local', 'nome', 'end'],
+    comparison: ['z', 'mun', 'cargo', 'turn'],
+    candidates: ['z', 'mun', 'num', 'nome', 'partido'],
+    parties: ['z', 'mun', 'num', 'partido']
+  }[tab];
+  const primaryKeys = {
+    sections: ['apt', 'comp', 'abs', 'rate'],
+    places: ['sec', 'apt', 'comp', 'abs', 'rate'],
+    comparison: ['apt', 'comp', 'abs', 'rate', 'validos', 'br', 'nu'],
+    candidates: ['votos', 'validos'],
+    parties: ['leg', 'nom', 'total']
+  }[tab];
+  const extraKeys = data.columns.map(([key]) => key).filter(key => !headingKeys.includes(key) && !primaryKeys.includes(key) && row[key] !== undefined && row[key] !== null && row[key] !== '');
+  const checkbox = selectable
+    ? `<label class="data-card-select"><input type="checkbox" class="section-select" data-section-key="${escapeHtml(sectionKey(row))}" aria-label="Selecionar seção ${escapeHtml(row.sec)}, zona ${row.z}, ${escapeHtml(row.mun)}" ${selectedSections.has(sectionKey(row)) ? 'checked' : ''}><span>Selecionar</span></label>`
+    : '';
+  return `<article class="data-card" role="listitem"><div class="data-card-heading">${checkbox}<div class="data-card-title"><strong>${escapeHtml(heading.title)}</strong><span>${escapeHtml(heading.subtitle)}</span>${heading.detail ? `<p>${escapeHtml(heading.detail)}</p>` : ''}</div></div><dl class="data-card-metrics">${mobileCardFields(row, data.columns, primaryKeys)}</dl>${extraKeys.length ? `<details class="data-card-more"><summary>Ver outros dados</summary><dl class="data-card-details">${mobileCardFields(row, data.columns, extraKeys)}</dl></details>` : ''}</article>`;
+}
+
 function show() {
   const presidentSelected = $('office').value === 'Presidente';
   const partiesTab = document.querySelector('[data-tab="parties"]');
   partiesTab.classList.toggle('hidden', presidentSelected);
   if (presidentSelected && tab === 'parties') tab = 'sections';
-  document.querySelectorAll('.tab').forEach(element => element.classList.toggle('active', element.dataset.tab === tab));
+  document.querySelectorAll('.tab').forEach(element => {
+    const selected = element.dataset.tab === tab;
+    element.classList.toggle('active', selected);
+    element.setAttribute('aria-pressed', String(selected));
+  });
   renderMetrics();
   const data = dataForTab();
   let rows = data.rows.filter(row => !search || Object.values(row).some(value => String(value).toLocaleLowerCase('pt-BR').includes(search)));
@@ -281,15 +344,16 @@ function show() {
   page = Math.min(page, totalPages - 1);
   const pageRows = rows.slice(page * 50, (page + 1) * 50);
   const selectable = tab === 'sections';
-  const body = pageRows.map(row => '<tr>' + (selectable ? `<td class="selection-cell"><input type="checkbox" class="section-select" data-section-key="${escapeHtml(sectionKey(row))}" aria-label="Selecionar seção ${escapeHtml(row.sec)}, zona ${row.z}, ${escapeHtml(row.mun)}" ${selectedSections.has(sectionKey(row)) ? 'checked' : ''}></td>` : '') + data.columns.map(([key]) => {
+  const body = pageRows.map(row => '<tr>' + (selectable ? `<td class="selection-cell"><input type="checkbox" class="section-select" data-section-key="${escapeHtml(sectionKey(row))}" aria-label="Selecionar seção ${escapeHtml(row.sec)}, zona ${row.z}, ${escapeHtml(row.mun)}" ${selectedSections.has(sectionKey(row)) ? 'checked' : ''}></td>` : '') + data.columns.map(([key, label]) => {
     let value = row[key];
     if (key === 'rate') value = `<span class="pill">${pf(value)}</span><span class="bar"><span class="fill" style="display:block;width:${Math.min(100, value)}%"></span></span>`;
     else if (typeof value === 'number') value = fmt(value);
     else value = escapeHtml(value);
-    return `<td class="${typeof row[key] === 'number' ? 'num' : ''}">${value ?? ''}</td>`;
+    return `<td class="${typeof row[key] === 'number' ? 'num' : ''}" data-label="${escapeHtml(label)}">${value ?? ''}</td>`;
   }).join('') + '</tr>').join('');
   const titles = { sections: 'Abstenção e votos por seção', places: 'Consolidado por local de votação', comparison: 'Comparativo eleitoral', candidates: 'Votação nominal por candidato', parties: 'Votação por partido' };
-  $('tabcontent').innerHTML = `<section class="panel"><h2>${titles[tab]}</h2><p class="hint">${data.description}</p>${selectable ? `<div class="selection-toolbar"><div><strong id="selection-count"></strong><span> A seleção é mantida ao alterar os filtros.</span></div><div class="tools"><button class="btn" id="toggle-page-selection">Selecionar página</button><button class="btn" id="preview-report" ${selectedSections.size ? '' : 'disabled'}>Prévia do relatório</button><button class="btn" id="clear-selection" ${selectedSections.size ? '' : 'disabled'}>Limpar seleção</button></div></div>` : ''}<div class="toolbar"><div><b>${fmt(rows.length)}</b> registros encontrados</div><div class="tools"><input class="search" id="q" value="${escapeHtml(search)}" placeholder="Buscar nome, seção, município..." aria-label="Buscar na tabela"><button class="btn" id="download">Exportar CSV filtrado</button><button class="btn" id="reset">Limpar busca</button></div></div><div class="table-wrap"><table><thead><tr>${selectable ? '<th class="selection-cell">Selecionar</th>' : ''}${data.columns.map(([key, label]) => {
+  const mobileCards = pageRows.map(row => renderMobileCard(row, data, selectable)).join('');
+  $('tabcontent').innerHTML = `<section class="panel"><h2>${titles[tab]}</h2><p class="hint">${data.description}</p>${selectable ? `<div class="selection-toolbar"><div><strong id="selection-count"></strong><span> A seleção é mantida ao alterar os filtros.</span></div><div class="tools"><button class="btn" id="toggle-page-selection">Selecionar página</button><button class="btn" id="preview-report" ${selectedSections.size ? '' : 'disabled'}>Prévia do relatório</button><button class="btn" id="clear-selection" ${selectedSections.size ? '' : 'disabled'}>Limpar seleção</button></div></div>` : ''}<div class="toolbar"><div class="result-count"><b>${fmt(rows.length)}</b> registros encontrados</div><div class="tools"><input class="search" id="q" value="${escapeHtml(search)}" placeholder="Buscar nome, seção, município..." aria-label="Buscar na tabela"><button class="btn" id="download">Exportar CSV filtrado</button><button class="btn" id="reset" ${search ? '' : 'disabled'}>Limpar busca</button></div></div><div class="mobile-sort"><label for="mobile-sort">Ordenar por</label><select id="mobile-sort">${data.columns.map(([key, label]) => `<option value="${escapeHtml(key)}" ${sortKey === key ? 'selected' : ''}>${escapeHtml(label)}</option>`).join('')}</select><button class="btn" type="button" id="mobile-sort-direction" aria-label="Alternar para ordem ${sortDir === 1 ? 'decrescente' : 'crescente'}">${sortDir === 1 ? 'Crescente ↑' : 'Decrescente ↓'}</button></div><div class="mobile-results" role="list" aria-label="Resultados da consulta">${mobileCards || '<p class="mobile-empty">Nenhum resultado corresponde aos filtros. Ajuste a busca ou os filtros para continuar.</p>'}</div><div class="table-wrap"><table><thead><tr>${selectable ? '<th class="selection-cell">Selecionar</th>' : ''}${data.columns.map(([key, label]) => {
     const isSorted = sortKey === key;
     const direction = sortDir === 1 ? 'ascending' : 'descending';
     const indicator = isSorted ? (sortDir === 1 ? '↑' : '↓') : '';
@@ -319,6 +383,9 @@ function show() {
   });
   $('download').onclick = download;
   $('reset').onclick = () => { search = ''; page = 0; show(); };
+  $('mobile-sort').value = sortKey || data.columns[0][0];
+  $('mobile-sort').onchange = event => { sortKey = event.target.value; sortDir = -1; page = 0; show(); };
+  $('mobile-sort-direction').onclick = () => { sortDir *= -1; show(); };
   $('prev').onclick = () => { page--; show(); };
   $('next').onclick = () => { page++; show(); };
   document.querySelectorAll('th[data-key]').forEach(element => element.onclick = () => {

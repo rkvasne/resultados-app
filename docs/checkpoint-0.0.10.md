@@ -2,7 +2,7 @@
 
 ## Entrega
 
-- O relatório de consulta agora identifica a fonte de comparecimento/abstenção e, para Presidente, a fonte de votação por seção, com os caminhos relativos dos arquivos.
+- O relatório de comparecimento/abstenção identifica o ZIP de detalhe por seção, único conjunto usado para calcular as estatísticas apresentadas no PDF.
 - O bloco de procedência informa catálogo TSE, código da eleição, turno, data, UF, zonas e seções selecionadas, além de `DT_GERACAO`/`HH_GERACAO` quando disponíveis.
 - Os cabeçalhos das colunas numéricas estão alinhados à direita com os valores correspondentes.
 
