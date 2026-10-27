@@ -4,6 +4,7 @@ Documentação local do Painel Eleitoral das 3ª e 30ª Zonas Eleitorais de Rond
 
 ## Guias
 
+- [Checkpoint 0.0.13](checkpoint-0.0.13.md): escala tipográfica e validação visual do painel e relatório.
 - [Checkpoint 0.0.12](checkpoint-0.0.12.md): alinhamento dos controles de busca e exportação em telas largas.
 - [Checkpoint 0.0.11](checkpoint-0.0.11.md): revisão responsiva da interface, validação dos importadores e evidências do checkpoint.
 - [Arquitetura e funcionamento](architecture.md): arquivos, fluxo no navegador, armazenamento e operação offline.

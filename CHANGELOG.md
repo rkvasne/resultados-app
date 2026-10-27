@@ -2,6 +2,24 @@
 
 Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/). A primeira versão publicada é `0.0.1`.
 
+## [0.0.13] - 2026-10-27
+
+### Melhorado
+
+- Criada uma escala tipográfica coerente para cabeçalho, indicadores, filtros, tabelas, cartões móveis e relatório, com pesos e espaçamentos que destacam cada nível de informação.
+- Mantido o uso de fontes do sistema para preservar a operação offline; o subtítulo do painel identifica fonte, região e turno sem repetir a data exibida no título.
+
+### Verificado
+
+- Cabeçalho e título da aba conferidos nos dois turnos; todas as abas e a prévia do relatório foram verificadas no navegador.
+- Layout conferido em 320, 390, 1024 e 1536 px; sintaxe JavaScript e `git diff --check` sem erros.
+- O repositório não possui `package.json` nem suíte npm; `npm run verify:full` não está disponível.
+
+### Aprendizado
+
+- Fato observado: a interface misturava textos auxiliares entre 10 e 12 px com títulos pouco diferenciados, inclusive em cartões e relatório.
+- Ação aplicada: escalar tipografia por função e elevar o tamanho mínimo dos dados auxiliares móveis.
+
 ## [0.0.12] - 2026-10-27
 
 ### Melhorado

@@ -398,11 +398,15 @@ function show() {
 
 function updateTurn() {
   const secondTurn = $('turn').value === '2';
+  const electionDate = secondTurn ? '25/10/2026' : '04/10/2026';
+  const appTitle = `Resultados — Eleições 2026 · ${electionDate}`;
   const presidentSelected = $('office').value === 'Presidente';
   if (secondTurn) $('office').value = 'Presidente';
+  document.querySelector('header h1').textContent = appTitle;
+  document.title = appTitle;
   updatePlaces();
   updateOfficeGuidance();
-  document.querySelector('header p').textContent = `Painel independente · Dados públicos do TSE · Rondônia · ${$('turn').value}º turno (${secondTurn ? '25/10/2026' : '04/10/2026'}).`;
+  document.querySelector('header p').textContent = `Painel independente · Dados públicos do TSE · Rondônia · ${$('turn').value}º turno.`;
   document.querySelector('.note').innerHTML = secondTurn
     ? '<b>Como interpretar:</b> No 2º turno, os indicadores de aptos, comparecimento e abstenção vêm do detalhe presidencial por seção de 25/10/2026. Os votos presidenciais vêm do arquivo de votação por seção do mesmo turno. A taxa geral é ponderada pelos eleitores aptos.'
     : presidentSelected
