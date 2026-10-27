@@ -70,9 +70,13 @@ async function main() {
   }
 
   const baseSections = new Map();
-  await eachCsvRow(detailPath, ['NR_TURNO', 'CD_ELEICAO', 'DT_ELEICAO', 'SG_UF', 'NM_MUNICIPIO', 'NR_ZONA', 'NR_SECAO', 'CD_CARGO', 'DS_CARGO', 'QT_APTOS', 'QT_COMPARECIMENTO', 'QT_ABSTENCOES', 'NR_LOCAL_VOTACAO', 'NM_LOCAL_VOTACAO', 'DS_LOCAL_VOTACAO_ENDERECO', 'DS_MODELO_URNA', 'DT_RECEBIMENTO_BU_HOR_TSE'], (values, headers) => {
+  let detailGeneratedAt = '';
+  let detailGeneratedTime = '';
+  await eachCsvRow(detailPath, ['DT_GERACAO', 'HH_GERACAO', 'NR_TURNO', 'CD_ELEICAO', 'DT_ELEICAO', 'SG_UF', 'NM_MUNICIPIO', 'NR_ZONA', 'NR_SECAO', 'CD_CARGO', 'DS_CARGO', 'QT_APTOS', 'QT_COMPARECIMENTO', 'QT_ABSTENCOES', 'NR_LOCAL_VOTACAO', 'NM_LOCAL_VOTACAO', 'DS_LOCAL_VOTACAO_ENDERECO', 'DS_MODELO_URNA', 'DT_RECEBIMENTO_BU_HOR_TSE'], (values, headers) => {
     const field = name => values[headers.indexOf(name)];
     if (field('CD_ELEICAO') !== '6258' || field('NR_TURNO') !== '2' || field('DT_ELEICAO') !== '25/10/2026' || field('SG_UF') !== 'RO' || field('CD_CARGO') !== '1' || normalize(field('DS_CARGO')) !== 'PRESIDENTE') return;
+    detailGeneratedAt = field('DT_GERACAO');
+    detailGeneratedTime = field('HH_GERACAO');
     const zone = Number(field('NR_ZONA'));
     if (zone !== 3 && zone !== 30) return;
     const municipality = field('NM_MUNICIPIO');
@@ -101,7 +105,8 @@ async function main() {
   let matchedRows = 0;
   let unmatchedRows = 0;
   let sourceGeneratedAt = '';
-  await eachCsvRow(votesPath, ['DT_GERACAO', 'NR_TURNO', 'CD_ELEICAO', 'DS_ELEICAO', 'DT_ELEICAO', 'SG_UF', 'NM_MUNICIPIO', 'NR_ZONA', 'NR_SECAO', 'CD_CARGO', 'DS_CARGO', 'NR_VOTAVEL', 'NM_VOTAVEL', 'QT_VOTOS'], (values, headers) => {
+  let sourceGeneratedTime = '';
+  await eachCsvRow(votesPath, ['DT_GERACAO', 'HH_GERACAO', 'NR_TURNO', 'CD_ELEICAO', 'DS_ELEICAO', 'DT_ELEICAO', 'SG_UF', 'NM_MUNICIPIO', 'NR_ZONA', 'NR_SECAO', 'CD_CARGO', 'DS_CARGO', 'NR_VOTAVEL', 'NM_VOTAVEL', 'QT_VOTOS'], (values, headers) => {
     const field = name => values[headers.indexOf(name)];
     if (field('CD_ELEICAO') !== '6258' || field('NR_TURNO') !== '2' || field('DT_ELEICAO') !== '25/10/2026' || field('SG_UF') !== 'RO' || field('CD_CARGO') !== '1' || normalize(field('DS_CARGO')) !== 'PRESIDENTE') return;
     const zone = Number(field('NR_ZONA'));
@@ -127,6 +132,7 @@ async function main() {
       candidateTotals.set(candidateKey, (candidateTotals.get(candidateKey) || 0) + count);
     }
     sourceGeneratedAt = field('DT_GERACAO');
+    sourceGeneratedTime = field('HH_GERACAO');
     matchedRows++;
   });
   if (unmatchedRows) throw new Error(`${unmatchedRows} linhas de votos presidenciais do turno 2 não correspondem ao detalhe das seções selecionadas.`);
@@ -155,8 +161,15 @@ async function main() {
     for (const property of ['apt', 'comp', 'abs', 'nom', 'br', 'nu']) summary[property] += section[property];
   }
   const output = {
-    source: 'TSE votacao_secao_2026_BR_2t.csv + detalhe_votacao_secao_2026_2t_BR.csv',
+    source: 'TSE Resultados 2026 — Votação por seção no Brasil + Detalhe da votação por seção no Brasil',
+    sourceFiles: {
+      attendance: 'docs/detalhe_votacao_secao_2026_2t/detalhe_votacao_secao_2026_BR.csv',
+      votes: 'docs/votacao_secao_2026_BR_2t/votacao_secao_2026_BR.csv'
+    },
+    detailGeneratedAt,
+    detailGeneratedTime,
     sourceGeneratedAt,
+    sourceGeneratedTime,
     electionCode: 6258,
     turn: 2,
     electionDate: '25/10/2026',

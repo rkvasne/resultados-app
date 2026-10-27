@@ -30,6 +30,12 @@ A taxa é calculada como:
 abstenções ÷ eleitores aptos × 100
 ```
 
+### Identificação das fontes no relatório
+
+O relatório de seções selecionadas informa o catálogo do TSE, código da eleição, turno, data, UF, zonas e números das seções. Também identifica separadamente o arquivo usado para aptos/comparecimento/abstenções e, quando aplicável, o arquivo de votação presidencial por seção. Para esses conjuntos, exibe `DT_GERACAO` e `HH_GERACAO` registrados nos CSVs. A data/hora de geração do relatório é apresentada à parte e não deve ser confundida com a geração das bases.
+
+No primeiro turno dos cargos estaduais, o relatório referencia `docs/detalhe_votacao_secao_2026/detalhe_votacao_secao_2026_RO.csv`; os votos desses cargos não fazem parte do relatório de comparecimento e abstenção. Nos relatórios presidenciais, a base de comparecimento e a base de votação são explicitadas separadamente para evitar sugerir que os indicadores de presença foram calculados a partir dos votos.
+
 O arquivo estadual por seção apresenta registros por cargo e repete valores de comparecimento/abstenção. Para os cargos estaduais, o painel mantém uma base por seção e não soma essas repetições. Para Presidente, utiliza o detalhe específico da eleição presidencial, conforme os relatórios SISTOT. Em qualquer agregação, calcule a taxa sobre os totais de abstenções e aptos, em vez de tirar a média simples das taxas das seções.
 
 ## Integração presidencial

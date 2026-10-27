@@ -9,6 +9,7 @@ Documentação local do Painel Eleitoral das 3ª e 30ª Zonas Eleitorais de Rond
 - [Checkpoint 0.0.7](checkpoint-0.0.7.md): revisão, escopo da entrega e evidências de verificação.
 - [Checkpoint 0.0.8](checkpoint-0.0.8.md): correção da paginação do relatório PDF.
 - [Checkpoint 0.0.9](checkpoint-0.0.9.md): validação dos dados do 2º turno e seleção inicial da apuração mais recente.
+- [Checkpoint 0.0.10](checkpoint-0.0.10.md): identificação das fontes no relatório e alinhamento das colunas numéricas.
 
 ## Documentos relacionados
 

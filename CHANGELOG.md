@@ -2,6 +2,14 @@
 
 Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/). A primeira versão publicada é `0.0.1`.
 
+## [0.0.10] - 2026-10-27
+
+### Alterado
+
+- Identificadas no relatório as fontes TSE, arquivos usados, códigos da eleição, filtros geográficos, seções selecionadas e metadados de geração disponíveis nos CSVs.
+- Alinhados os cabeçalhos numéricos do relatório às colunas de valores correspondentes.
+- Mantida a impressão do relatório em uma página no recorte validado.
+
 ## [0.0.9] - 2026-10-27
 
 ### Alterado

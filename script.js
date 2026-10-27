@@ -56,6 +56,26 @@ function reportRows() {
     .sort((a, b) => a.z - b.z || a.mun.localeCompare(b.mun, 'pt-BR') || a.sec - b.sec);
 }
 
+function reportSources() {
+  const turn = $('turn').value;
+  const president = turn === '2' || $('office').value === 'Presidente';
+  const data = turn === '2' ? PRESIDENT_DATA_2T : president ? PRESIDENT_DATA : null;
+  if (data) {
+    const attendance = data.sourceFiles?.attendance || 'docs/detalhe_votacao_secao_2026_2t/detalhe_votacao_secao_2026_BR.csv';
+    const votes = data.sourceFiles?.votes || (turn === '2' ? 'docs/votacao_secao_2026_BR_2t/votacao_secao_2026_BR.csv' : 'docs/votacao_secao_2026_BR/votacao_secao_2026_BR.csv');
+    const stamp = (date, time) => [date, time].filter(Boolean).join(' ');
+    return [
+      { label: 'Comparecimento e abstenção', file: attendance, generated: stamp(data.detailGeneratedAt, data.detailGeneratedTime) },
+      { label: 'Votação presidencial por seção', file: votes, generated: stamp(data.sourceGeneratedAt, data.sourceGeneratedTime) }
+    ];
+  }
+  return [{
+    label: 'Comparecimento e abstenção por seção',
+    file: 'docs/detalhe_votacao_secao_2026/detalhe_votacao_secao_2026_RO.csv',
+    generated: ''
+  }];
+}
+
 function showReport() {
   const rows = reportRows();
   if (!rows.length) return;
@@ -64,6 +84,13 @@ function showReport() {
   const averageRate = rows.reduce((total, row) => total + pct(row.abs, row.apt), 0) / rows.length;
   const date = $('turn').value === '2' ? '25/10/2026' : '04/10/2026';
   const cargo = $('turn').value === '2' ? 'Presidente' : $('office').value;
+  const isPresident = $('turn').value === '2' || cargo === 'Presidente';
+  const sources = reportSources();
+  const zones = [...new Set(rows.map(row => row.z))].sort((a, b) => a - b);
+  const sourceItems = sources.map(source => `<li><strong>${escapeHtml(source.label)}:</strong> <code>${escapeHtml(source.file)}</code>${source.generated ? ` · geração informada no CSV: ${escapeHtml(source.generated)}` : ' · data de geração não registrada no recorte da página'}</li>`).join('');
+  const electionCode = $('turn').value === '2' ? '6258' : isPresident ? '6257' : '6259';
+  const sectionNumbers = rows.map(row => `${row.z}ª ZE/${row.sec}`).join(', ');
+  const sourceNote = `TSE, Dados Abertos — Resultados 2026. Eleição ${electionCode}; turno ${$('turn').value}; data ${date}; UF RO; ZE ${zones.join(', ')}; cargo ${isPresident ? '1 (Presidente)' : 'estadual'}; seção(ões): ${sectionNumbers}.`;
   const generatedAt = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date());
   const metrics = [
     ['Seções selecionadas', fmt(rows.length)],
@@ -72,9 +99,9 @@ function showReport() {
     ['Abstenções', fmt(summary.abs)],
     ['Taxa ponderada', pf(weightedRate)]
   ];
-  const body = rows.map(row => `<tr><td>${row.z}</td><td>${escapeHtml(row.mun)}</td><td class="num">${fmt(row.sec)}</td><td class="num">${row.local ? fmt(row.local) : '—'}</td><td>${escapeHtml(row.nome)}</td><td class="num">${fmt(row.apt)}</td><td class="num">${fmt(row.comp)}</td><td class="num">${pf(pct(row.comp, row.apt))}</td><td class="num">${fmt(row.abs)}</td><td class="num">${pf(pct(row.abs, row.apt))}</td></tr>`).join('');
+  const body = rows.map(row => `<tr><td class="num">${row.z}</td><td>${escapeHtml(row.mun)}</td><td class="num">${fmt(row.sec)}</td><td class="num">${row.local ? fmt(row.local) : '—'}</td><td>${escapeHtml(row.nome)}</td><td class="num">${fmt(row.apt)}</td><td class="num">${fmt(row.comp)}</td><td class="num">${pf(pct(row.comp, row.apt))}</td><td class="num">${fmt(row.abs)}</td><td class="num">${pf(pct(row.abs, row.apt))}</td></tr>`).join('');
   const selectedLabel = rows.length === 1 ? '1 seção selecionada' : `${rows.length} seções selecionadas`;
-  $('report-preview').innerHTML = `<header class="report-heading"><p>Eleições Gerais 2026 · ${date}</p><h1 id="report-title">Consulta de Comparecimento e Abstenção</h1><p>${$('turn').value}º turno · Cargo para resultados: ${escapeHtml(cargo)} · ${selectedLabel}</p></header><section class="report-metrics" aria-label="Resumo das seções selecionadas">${metrics.map(([name, value]) => `<div class="report-metric"><span>${name}</span><strong>${value}</strong></div>`).join('')}</section><p class="report-method">Taxa ponderada = total de abstenções ÷ total de eleitores aptos. A média simples das taxas por seção neste recorte é ${pf(averageRate)}; ela não substitui a taxa ponderada.</p><div class="report-table-wrap"><table class="report-table"><thead><tr><th>ZE</th><th>Município</th><th>Seção</th><th>Local nº</th><th>Local de votação</th><th>Aptos</th><th>Comparecimento</th><th>Comparecimento %</th><th>Abstenções</th><th>Abstenção %</th></tr></thead><tbody>${body}</tbody></table></div><footer class="report-footer">Relatório independente gerado em ${generatedAt}. Dados públicos do TSE; abstenções e percentuais calculados a partir dos totais por seção.</footer>`;
+  $('report-preview').innerHTML = `<header class="report-heading"><p>Eleições Gerais 2026 · ${date}</p><h1 id="report-title">Consulta de Comparecimento e Abstenção</h1><p>${$('turn').value}º turno · Cargo para resultados: ${escapeHtml(cargo)} · ${selectedLabel}</p></header><section class="report-metrics" aria-label="Resumo das seções selecionadas">${metrics.map(([name, value]) => `<div class="report-metric"><span>${name}</span><strong>${value}</strong></div>`).join('')}</section><p class="report-method">Taxa ponderada = total de abstenções ÷ total de eleitores aptos. A média simples das taxas por seção neste recorte é ${pf(averageRate)}; ela não substitui a taxa ponderada.</p><div class="report-table-wrap"><table class="report-table"><thead><tr><th class="num">ZE</th><th>Município</th><th class="num">Seção</th><th class="num">Local nº</th><th>Local de votação</th><th class="num">Aptos</th><th class="num">Comparecimento</th><th class="num">Comparecimento %</th><th class="num">Abstenções</th><th class="num">Abstenção %</th></tr></thead><tbody>${body}</tbody></table></div><section class="report-provenance" aria-label="Fonte e critérios dos dados"><h2>Fonte e critérios dos dados</h2><p>${escapeHtml(sourceNote)} Cruzamento dos registros por zona eleitoral, município e seção.</p><ul>${sourceItems}</ul><p>Catálogo: <a href="https://dadosabertos.tse.jus.br/dataset/resultados-2026">TSE — Dados Abertos, Resultados 2026</a>. Os percentuais e totais do relatório são calculados pelo painel a partir dos totais por seção.</p></section><footer class="report-footer">Relatório independente gerado em ${generatedAt}.</footer>`;
   $('report-dialog').showModal();
 }
 
