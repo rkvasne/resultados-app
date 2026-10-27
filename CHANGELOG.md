@@ -2,6 +2,26 @@
 
 Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/). A primeira versão publicada é `0.0.1`.
 
+## [0.0.14] - 2026-10-27
+
+### Melhorado
+
+- Reduzidas as caixas de seleção dos resultados para o controle nativo de 16 × 16 px; mantida área de toque de 44 px nos cartões móveis, foco visível e indicação da linha selecionada.
+- Uniformizados espaçamentos, títulos, abas, tabelas, rankings, cartões e estados desabilitados nas visões do painel e no relatório.
+- Aumentados textos auxiliares do relatório e dos cartões para leitura mais confortável.
+
+### Verificado
+
+- Interface conferida nos dois turnos, nas abas disponíveis e na prévia do relatório; largura conferida em 320, 390, 1024 e 1536 px, sem rolagem horizontal da página.
+- Caixa de seleção em desktop: 16 × 16 px; alvo móvel medido em 53 × 44 px. Console do navegador sem erros e `git diff --check` sem erros.
+- Os cinco arquivos JavaScript passaram em `node --check`; importadores dos dois turnos validaram 409/409 seções e zero divergências entre votos e comparecimento.
+- `npm run verify:full` não está disponível porque o repositório não contém `package.json` nem suíte npm.
+
+### Aprendizado
+
+- Fato observado: os checkboxes personalizados em 20 px pareciam grandes na lista de resultados e os elementos de seleção variavam entre desktop e celular.
+- Ação aplicada: manter o checkbox nativo de 16 px e ampliar somente o rótulo clicável no celular, preservando a acessibilidade.
+
 ## [0.0.13] - 2026-10-27
 
 ### Melhorado
