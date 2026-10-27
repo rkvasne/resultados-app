@@ -1,7 +1,7 @@
 {
   "version": "0.13.1",
   "createdAt": "2026-10-21T17:54:01.518Z",
-  "lastUpdated": "2026-10-21T18:43:34.900Z",
+  "lastUpdated": "2026-10-27T13:16:42.125Z",
   "satellites": {},
   "modesUsed": {},
   "skillsUsed": {},
@@ -15,6 +15,28 @@
       "lastExecutionAt": "2026-10-21T17:54:01.910Z",
       "sources": {
         "official-recorder": 2
+      }
+    },
+    "20": {
+      "count": 1,
+      "executions": 1,
+      "firstUsed": "2026-10-27T13:16:41.844Z",
+      "lastUsed": "2026-10-27T13:16:41.844Z",
+      "lastExecutionKey": "hygiene-2026-10-27",
+      "lastExecutionAt": "2026-10-27T13:16:41.844Z",
+      "sources": {
+        "official-recorder": 1
+      }
+    },
+    "25": {
+      "count": 1,
+      "executions": 1,
+      "firstUsed": "2026-10-27T13:16:42.124Z",
+      "lastUsed": "2026-10-27T13:16:42.124Z",
+      "lastExecutionKey": "hygiene-2026-10-27",
+      "lastExecutionAt": "2026-10-27T13:16:42.124Z",
+      "sources": {
+        "official-recorder": 1
       }
     },
     "36": {
@@ -31,7 +53,7 @@
   },
   "validationRuns": 0,
   "buildRuns": 0,
-  "snapshotAt": "2026-10-21T18:43:35.035Z",
+  "snapshotAt": "2026-10-27T14:13:00.902Z",
   "partitions": {
     "files": ["events-2026-10.jsonl"],
     "note": "Buraco na sequencia de meses e ESPERADO: mes sem atividade nao gera arquivo. Ausencia nao e arquivo faltando nem dado perdido."

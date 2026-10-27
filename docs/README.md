@@ -6,6 +6,7 @@ Documentação local do Painel Eleitoral das 3ª e 30ª Zonas Eleitorais de Rond
 
 - [Arquitetura e funcionamento](architecture.md): arquivos, fluxo no navegador, armazenamento e operação offline.
 - [Fontes e tratamento dos dados](data-sources.md): conjuntos TSE, escopo, cruzamentos, validações e limitações conhecidas.
+- [Checkpoint 0.0.7](checkpoint-0.0.7.md): revisão, escopo da entrega e evidências de verificação.
 
 ## Documentos relacionados
 

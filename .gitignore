@@ -6,6 +6,19 @@
 /votacao_secao_2026_BR/
 /*.zip
 
+# Fontes brutas foram movidas para docs/; não versionar os CSVs nem os pacotes do TSE.
+/docs/detalhe_votacao_munzona_2026/
+/docs/detalhe_votacao_secao_2026/
+/docs/detalhe_votacao_secao_2026_2t/
+/docs/perfil_comparecimento_abstencao_2026/
+/docs/votacao_candidato_munzona_2026/
+/docs/votacao_candidato_munzona_2026_2t/
+/docs/votacao_partido_munzona_2026/
+/docs/votacao_secao_2026_BR/
+/docs/votacao_secao_2026_BR_2t/
+/docs/votacao_secao_2026_RO_2t/
+/docs/*.zip
+
 # Arquivos locais e temporários.
 /.env
 /.env.*

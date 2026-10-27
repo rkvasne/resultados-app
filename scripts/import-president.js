@@ -6,31 +6,21 @@ const { TextDecoder } = require('node:util');
 
 const root = path.resolve(__dirname, '..');
 const args = process.argv.slice(2);
+const paths = args.filter(argument => !argument.startsWith('--'));
 const write = args.includes('--write');
-const inputPath = path.resolve(root, args.find(argument => !argument.startsWith('--')) || 'votacao_secao_2026_BR/votacao_secao_2026_BR.csv');
+const votesPath = path.resolve(root, paths[0] || 'docs/votacao_secao_2026_BR/votacao_secao_2026_BR.csv');
+const detailPath = path.resolve(root, paths[1] || 'docs/detalhe_votacao_secao_2026_2t/detalhe_votacao_secao_2026_BR.csv');
 const outputPath = path.join(root, 'presidente_2026.js');
-const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-const embeddedData = html.match(/<script id="data" type="application\/json">([\s\S]*?)<\/script>/);
+const expectedSections = 409;
 
-if (!embeddedData) throw new Error('Não foi encontrado o bloco JSON de dados em index.html.');
-
-const dashboardData = JSON.parse(embeddedData[1]);
 const normalize = value => String(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
 const makeKey = (zone, municipality, section) => `${zone}|${normalize(municipality)}|${section}`;
 const makeRegionKey = (zone, municipality) => `${zone}|${normalize(municipality)}`;
-const baseSections = new Map(dashboardData.sections.map(section => [makeKey(section.z, section.mun, section.sec), section]));
-const voteBySection = new Map();
-const candidateTotals = new Map();
-const candidateCatalog = new Map();
-const sourceRowsByRegion = new Map();
-let matchedRows = 0;
-let unmatchedRows = 0;
 
 function parseCsvRow(line) {
   const fields = [];
   let value = '';
   let quoted = false;
-
   for (let index = 0; index < line.length; index++) {
     const character = line[index];
     if (character === '"' && quoted && line[index + 1] === '"') {
@@ -45,142 +35,145 @@ function parseCsvRow(line) {
       value += character;
     }
   }
-
   fields.push(value);
   return fields;
 }
 
-function fieldIndex(headers, name) {
-  const index = headers.indexOf(name);
-  if (index === -1) throw new Error(`Coluna obrigatória ausente no CSV: ${name}`);
-  return index;
-}
-
-async function importVotes() {
+async function eachCsvRow(inputPath, required, callback) {
   const decoder = new TextDecoder('windows-1252');
   const decodeStream = new Transform({
-    transform(chunk, encoding, callback) {
-      callback(null, decoder.decode(chunk, { stream: true }));
-    },
-    flush(callback) {
-      callback(null, decoder.decode());
-    }
+    transform(chunk, encoding, done) { done(null, decoder.decode(chunk, { stream: true })); },
+    flush(done) { done(null, decoder.decode()); }
   });
-  const input = fs.createReadStream(inputPath).pipe(decodeStream);
-  const lines = readline.createInterface({ input, crlfDelay: Infinity });
+  const lines = readline.createInterface({ input: fs.createReadStream(inputPath).pipe(decodeStream), crlfDelay: Infinity });
   let headers;
-
   for await (const line of lines) {
     if (!headers) {
       headers = parseCsvRow(line.replace(/^\uFEFF/, ''));
-      const required = ['NR_TURNO', 'CD_ELEICAO', 'SG_UF', 'CD_MUNICIPIO', 'NM_MUNICIPIO', 'NR_ZONA', 'NR_SECAO', 'CD_CARGO', 'DS_CARGO', 'NR_VOTAVEL', 'NM_VOTAVEL', 'QT_VOTOS'];
-      for (const name of required) fieldIndex(headers, name);
+      const missing = required.filter(name => !headers.includes(name));
+      if (missing.length) throw new Error(`Colunas obrigatórias ausentes em ${path.basename(inputPath)}: ${missing.join(', ')}.`);
       continue;
     }
-
-    const values = parseCsvRow(line);
-    const field = name => values[fieldIndex(headers, name)];
-    if (field('CD_ELEICAO') !== '6257' || field('NR_TURNO') !== '1' || field('SG_UF') !== 'RO' || field('CD_CARGO') !== '1' || normalize(field('DS_CARGO')) !== 'PRESIDENTE') continue;
-
-    const number = field('NR_VOTAVEL');
-    const name = field('NM_VOTAVEL');
-    if (number !== '95' && number !== '96') candidateCatalog.set(number, { num: number, nome: name });
-
-    const zone = Number(field('NR_ZONA'));
-    if (zone !== 3 && zone !== 30) continue;
-
-    const municipality = field('NM_MUNICIPIO');
-    const sectionNumber = Number(field('NR_SECAO'));
-    const key = makeKey(zone, municipality, sectionNumber);
-    const baseSection = baseSections.get(key);
-    if (!baseSection) {
-      unmatchedRows++;
-      continue;
-    }
-
-    const voteCount = Number(field('QT_VOTOS'));
-    if (!Number.isSafeInteger(voteCount) || voteCount < 0) throw new Error(`Quantidade de votos inválida na seção ${key}.`);
-    let votes = voteBySection.get(key);
-    if (!votes) {
-      votes = { z: zone, mun: baseSection.mun, sec: sectionNumber, cargo: 'Presidente', nom: 0, br: 0, nu: 0, leg: 0, anu: 0 };
-      voteBySection.set(key, votes);
-    }
-
-    if (number === '95' || normalize(name) === 'VOTO BRANCO') {
-      votes.br += voteCount;
-    } else if (number === '96' || normalize(name) === 'VOTO NULO') {
-      votes.nu += voteCount;
-    } else {
-      votes.nom += voteCount;
-      const regionKey = makeRegionKey(zone, baseSection.mun);
-      const candidateKey = `${regionKey}|${number}`;
-      candidateTotals.set(candidateKey, (candidateTotals.get(candidateKey) || 0) + voteCount);
-    }
-
-    const regionKey = makeRegionKey(zone, baseSection.mun);
-    sourceRowsByRegion.set(regionKey, (sourceRowsByRegion.get(regionKey) || 0) + 1);
-    matchedRows++;
+    callback(parseCsvRow(line), headers);
   }
 }
 
-function buildOutput() {
-  if (unmatchedRows) throw new Error(`${unmatchedRows} linhas presidenciais das zonas 3/30 não correspondem a seções do painel.`);
-  if (voteBySection.size !== baseSections.size) throw new Error(`Cobertura incompleta: ${voteBySection.size} seções presidenciais para ${baseSections.size} seções no painel.`);
+function number(value, label) {
+  const parsed = Number(value);
+  if (!Number.isSafeInteger(parsed) || parsed < 0) throw new Error(`Valor inválido em ${label}: ${value}`);
+  return parsed;
+}
 
-  const votes = [...voteBySection.values()].sort((left, right) => left.z - right.z || left.mun.localeCompare(right.mun, 'pt-BR') || left.sec - right.sec);
-  const comparisonMismatches = votes.flatMap(vote => {
-    const attendance = baseSections.get(makeKey(vote.z, vote.mun, vote.sec)).comp;
-    const presidentialBallots = vote.nom + vote.br + vote.nu;
-    return presidentialBallots === attendance ? [] : [{ z: vote.z, mun: vote.mun, sec: vote.sec, presidentialBallots, attendance }];
+async function main() {
+  for (const inputPath of [votesPath, detailPath]) {
+    if (!fs.existsSync(inputPath)) throw new Error(`CSV não encontrado: ${inputPath}`);
+  }
+
+  const baseSections = new Map();
+  let detailGeneratedAt = '';
+  await eachCsvRow(detailPath, ['DT_GERACAO', 'NR_TURNO', 'CD_ELEICAO', 'DT_ELEICAO', 'SG_UF', 'NM_MUNICIPIO', 'NR_ZONA', 'NR_SECAO', 'CD_CARGO', 'DS_CARGO', 'QT_APTOS', 'QT_COMPARECIMENTO', 'QT_ABSTENCOES', 'NR_LOCAL_VOTACAO', 'NM_LOCAL_VOTACAO', 'DS_LOCAL_VOTACAO_ENDERECO', 'DS_MODELO_URNA', 'DT_RECEBIMENTO_BU_HOR_TSE'], (values, headers) => {
+    const field = name => values[headers.indexOf(name)];
+    if (field('CD_ELEICAO') !== '6257' || field('NR_TURNO') !== '1' || field('DT_ELEICAO') !== '04/10/2026' || field('SG_UF') !== 'RO' || field('CD_CARGO') !== '1' || normalize(field('DS_CARGO')) !== 'PRESIDENTE') return;
+    detailGeneratedAt = field('DT_GERACAO');
+    const zone = Number(field('NR_ZONA'));
+    if (zone !== 3 && zone !== 30) return;
+    const municipality = field('NM_MUNICIPIO');
+    const section = Number(field('NR_SECAO'));
+    const key = makeKey(zone, municipality, section);
+    if (baseSections.has(key)) throw new Error(`Seção repetida no detalhe presidencial do 1º turno: ${key}.`);
+    baseSections.set(key, {
+      z: zone,
+      mun: municipality,
+      sec: section,
+      local: Number(field('NR_LOCAL_VOTACAO')) || null,
+      nome: field('NM_LOCAL_VOTACAO'),
+      end: field('DS_LOCAL_VOTACAO_ENDERECO'),
+      apt: number(field('QT_APTOS'), `${key}/aptos`),
+      comp: number(field('QT_COMPARECIMENTO'), `${key}/comparecimento`),
+      abs: number(field('QT_ABSTENCOES'), `${key}/abstenções`),
+      modelo: field('DS_MODELO_URNA'),
+      bu: field('DT_RECEBIMENTO_BU_HOR_TSE')
+    });
   });
+  if (baseSections.size !== expectedSections) throw new Error(`Cobertura do detalhe presidencial do 1º turno: ${baseSections.size}/${expectedSections} seções; esperado 409.`);
 
-  const regions = [...new Map(dashboardData.sections.map(section => [makeRegionKey(section.z, section.mun), { z: section.z, mun: section.mun }])).values()];
+  const voteBySection = new Map();
+  const candidateCatalog = new Map();
+  const candidateTotals = new Map();
+  let matchedRows = 0;
+  let unmatchedRows = 0;
+  let votesGeneratedAt = '';
+  await eachCsvRow(votesPath, ['DT_GERACAO', 'NR_TURNO', 'CD_ELEICAO', 'DS_ELEICAO', 'DT_ELEICAO', 'SG_UF', 'NM_MUNICIPIO', 'NR_ZONA', 'NR_SECAO', 'CD_CARGO', 'DS_CARGO', 'NR_VOTAVEL', 'NM_VOTAVEL', 'QT_VOTOS'], (values, headers) => {
+    const field = name => values[headers.indexOf(name)];
+    if (field('CD_ELEICAO') !== '6257' || field('NR_TURNO') !== '1' || field('DT_ELEICAO') !== '04/10/2026' || field('SG_UF') !== 'RO' || field('CD_CARGO') !== '1' || normalize(field('DS_CARGO')) !== 'PRESIDENTE') return;
+    const zone = Number(field('NR_ZONA'));
+    if (zone !== 3 && zone !== 30) return;
+    const key = makeKey(zone, field('NM_MUNICIPIO'), Number(field('NR_SECAO')));
+    const section = baseSections.get(key);
+    if (!section) { unmatchedRows++; return; }
+    const num = field('NR_VOTAVEL');
+    const name = field('NM_VOTAVEL');
+    if (num !== '95' && num !== '96') candidateCatalog.set(num, { num, nome: name });
+    let vote = voteBySection.get(key);
+    if (!vote) {
+      vote = { z: zone, mun: section.mun, sec: section.sec, cargo: 'Presidente', nom: 0, br: 0, nu: 0, leg: 0, anu: 0 };
+      voteBySection.set(key, vote);
+    }
+    const count = number(field('QT_VOTOS'), `${key}/votos`);
+    if (num === '95' || normalize(name) === 'VOTO BRANCO') vote.br += count;
+    else if (num === '96' || normalize(name) === 'VOTO NULO') vote.nu += count;
+    else {
+      vote.nom += count;
+      const regionKey = makeRegionKey(zone, section.mun);
+      const candidateKey = `${regionKey}|${num}`;
+      candidateTotals.set(candidateKey, (candidateTotals.get(candidateKey) || 0) + count);
+    }
+    votesGeneratedAt = field('DT_GERACAO');
+    matchedRows++;
+  });
+  if (unmatchedRows) throw new Error(`${unmatchedRows} linhas de votos presidenciais do turno 1 não correspondem ao detalhe das seções selecionadas.`);
+  if (voteBySection.size !== baseSections.size) throw new Error(`Cobertura dos votos do turno 1: ${voteBySection.size}/${baseSections.size} seções.`);
+
+  const sections = [...baseSections.values()].map(section => ({ ...section, ...voteBySection.get(makeKey(section.z, section.mun, section.sec)), rate: section.apt ? 100 * section.abs / section.apt : 0 })).sort((a, b) => a.z - b.z || a.mun.localeCompare(b.mun, 'pt-BR') || a.sec - b.sec);
+  const comparisonMismatches = sections.flatMap(section => {
+    const presidentialBallots = section.nom + section.br + section.nu;
+    return presidentialBallots === section.comp ? [] : [{ z: section.z, mun: section.mun, sec: section.sec, presidentialBallots, attendance: section.comp }];
+  });
+  const regions = [...new Map(sections.map(section => [makeRegionKey(section.z, section.mun), { z: section.z, mun: section.mun }])).values()];
   const candidates = regions.flatMap(region => [...candidateCatalog.values()].map(candidate => ({
     ...region,
     ...candidate,
     votos: candidateTotals.get(`${makeRegionKey(region.z, region.mun)}|${candidate.num}`) || 0
   })));
-  candidates.sort((left, right) => left.z - right.z || left.mun.localeCompare(right.mun, 'pt-BR') || right.votos - left.votos || left.num.localeCompare(right.num, 'pt-BR', { numeric: true }));
-
+  candidates.sort((a, b) => a.z - b.z || a.mun.localeCompare(b.mun, 'pt-BR') || b.votos - a.votos || a.num.localeCompare(b.num, 'pt-BR', { numeric: true }));
   const municipalitiesByKey = new Map();
-  for (const section of dashboardData.sections) {
+  for (const section of sections) {
     const key = makeRegionKey(section.z, section.mun);
     let summary = municipalitiesByKey.get(key);
     if (!summary) {
       summary = { z: section.z, mun: section.mun, apt: 0, comp: 0, abs: 0, nom: 0, br: 0, nu: 0 };
       municipalitiesByKey.set(key, summary);
     }
-    summary.apt += section.apt;
-    summary.comp += section.comp;
-    summary.abs += section.abs;
-    const vote = voteBySection.get(makeKey(section.z, section.mun, section.sec));
-    summary.nom += vote.nom;
-    summary.br += vote.br;
-    summary.nu += vote.nu;
+    for (const property of ['apt', 'comp', 'abs', 'nom', 'br', 'nu']) summary[property] += section[property];
   }
-
-  return {
-    source: 'TSE votacao_secao_2026_BR.csv',
+  const output = {
+    source: 'TSE votacao_secao_2026_BR.csv + detalhe_votacao_secao_2026_2t_BR.csv',
+    sourceGeneratedAt: detailGeneratedAt,
+    votesGeneratedAt,
     electionCode: 6257,
     turn: 1,
+    electionDate: '04/10/2026',
     matchedRows,
     comparisonMismatches,
-    sections: votes,
+    sections,
     candidates,
-    municipalities: [...municipalitiesByKey.values()].sort((left, right) => left.z - right.z || left.mun.localeCompare(right.mun, 'pt-BR'))
+    municipalities: [...municipalitiesByKey.values()].sort((a, b) => a.z - b.z || a.mun.localeCompare(b.mun, 'pt-BR'))
   };
-}
-
-async function main() {
-  if (!fs.existsSync(inputPath)) throw new Error(`CSV não encontrado: ${inputPath}`);
-  await importVotes();
-  const output = buildOutput();
-  const sourceLineCount = [...sourceRowsByRegion.values()].reduce((total, count) => total + count, 0);
-  console.log(`Seções cobertas: ${output.sections.length}/${baseSections.size}`);
-  console.log(`Linhas do CSV aproveitadas: ${sourceLineCount}; candidatos: ${output.candidates.length}`);
-  console.log(`Conferência: ${output.sections.length - output.comparisonMismatches.length}/${output.sections.length} seções têm soma das categorias igual ao comparecimento; diferenças preservadas sem alterar a abstenção.`);
-  if (output.comparisonMismatches.length) console.log(`Seções com diferença: ${output.comparisonMismatches.map(item => `${item.z}/${item.mun}/${item.sec} (${item.presidentialBallots} votos; ${item.attendance} comparecimentos)`).join('; ')}`);
-
+  const totals = sections.reduce((sum, section) => (sum.apt += section.apt, sum.comp += section.comp, sum.abs += section.abs, sum.nom += section.nom, sum.br += section.br, sum.nu += section.nu, sum), { apt: 0, comp: 0, abs: 0, nom: 0, br: 0, nu: 0 });
+  console.log(`Eleição ${output.electionCode}, turno ${output.turn} (${output.electionDate}); detalhe gerado em ${detailGeneratedAt}, votação gerada em ${votesGeneratedAt}.`);
+  console.log(`Seções cobertas: ${sections.length}/${baseSections.size}; linhas aproveitadas: ${matchedRows}; candidatos: ${candidateCatalog.size}.`);
+  console.log(`Totais nas 409 seções: ${JSON.stringify(totals)}; divergências votos/comparecimento: ${comparisonMismatches.length}.`);
+  if (comparisonMismatches.length) console.log(`Seções com divergência: ${comparisonMismatches.map(item => `${item.z}/${item.mun}/${item.sec} (${item.presidentialBallots} votos; ${item.attendance} comparecimentos)`).join('; ')}`);
   if (write) {
     fs.writeFileSync(outputPath, `window.PRESIDENT_DATA = ${JSON.stringify(output)};\n`, 'utf8');
     console.log(`Arquivo gerado: ${path.relative(root, outputPath)}`);

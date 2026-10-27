@@ -2,7 +2,39 @@
 
 Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/). A primeira versão publicada é `0.0.1`.
 
+## [0.0.7] - 2026-10-27
+
+### Adicionado
+
+- Seleção de seções na tabela e prévia de relatório de comparecimento e abstenção, com totais ponderados, detalhamento por seção e impressão/salvamento em PDF.
+- Dados presidenciais dos dois turnos para as 409 seções das ZEs 3 e 30, extraídos dos arquivos TSE e validados por eleição, turno e data.
+
+### Corrigido
+
+- Alinhados aptos, comparecimento e abstenções do 1º turno de Presidente aos relatórios SISTOT; cargos estaduais continuam na base estadual.
+- Corrigida a contagem de seções em que votos presidenciais coincidem com comparecimento para respeitar os filtros ativos.
+- Corrigida a orientação do 1º turno para explicar que Presidente usa base de comparecimento distinta em quatro seções.
+- Documentados os novos dados, arquivos de referência e comandos de atualização dos dois turnos.
+
+### Aprendizado
+
+- Fato observado: os extratos presidenciais de comparecimento e os estaduais divergem em aptos e comparecimento em quatro seções, enquanto as abstenções coincidem.
+- Ação aplicada: manter as fontes separadas por cargo e comparar os totais com os relatórios SISTOT antes de gerar os recortes locais.
+
 ## [Não lançado]
+
+### Adicionado
+
+- Seleção de seções na tabela e prévia de relatório de comparecimento e abstenção, com totais ponderados, detalhamento por seção e impressão/salvamento em PDF.
+
+### Corrigido
+
+- Alinhados aptos, comparecimento e abstenções do 1º turno de Presidente aos relatórios SISTOT, com os totais oficiais por seção e município; os demais cargos mantêm a base estadual.
+- Atualizados os caminhos de origem para os dados TSE movidos para `docs/` e ampliadas as regras do Git para ignorar os arquivos brutos nessa pasta.
+- Importados os votos presidenciais e os dados de comparecimento/abstenção do segundo turno para as 409 seções das ZEs 3 e 30; incluído seletor de turno, com Presidente como único cargo no segundo turno.
+- Identificada e documentada a inconsistência dos arquivos regionais de Rondônia rotulados `_2t`, que ainda contêm dados da eleição de 04/10; o recorte do segundo turno usa os arquivos nacionais com filtros de eleição, turno e data.
+- Atualizado o extrator presidencial de primeiro turno para buscar seu CSV padrão em `docs/`, acompanhando a reorganização dos dados.
+- Atualizadas referências documentais sobre o empacotamento de dados brutos e incluído `.vercelignore` na estrutura do projeto.
 
 ## [0.0.6] - 2026-10-21
 

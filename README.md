@@ -2,10 +2,13 @@
 
 Painel independente, estático e offline para consultar abstenção por seção e resultados eleitorais das Zonas Eleitorais 3 e 30 de Rondônia, com dados públicos do TSE.
 
-**Eleição:** 1º turno das Eleições Gerais de 2026, em 4 de outubro de 2026  
-**Escopo:** Ji-Paraná e Presidente Médici, conforme a zona eleitoral  
-**Versão:** 0.0.6  
-**Documentação revisada em:** 21 de outubro de 2026
+**Eleição:** 1º turno (4 de outubro) e 2º turno (25 de outubro) das Eleições Gerais de 2026
+
+**Escopo:** Ji-Paraná e Presidente Médici, conforme a zona eleitoral
+
+**Versão:** 0.0.7
+
+**Documentação revisada em:** 27/10/2026
 
 ## Começar
 
@@ -15,6 +18,7 @@ Mantenha os arquivos da interface na mesma pasta e abra o HTML em um navegador a
 - [`styles.css`](styles.css)
 - [`responsive.css`](responsive.css)
 - [`presidente_2026.js`](presidente_2026.js)
+- [`presidente_2026_2t.js`](presidente_2026_2t.js)
 - [`script.js`](script.js)
 - [`favicon.svg`](favicon.svg)
 - [`.vercelignore`](.vercelignore)
@@ -24,27 +28,28 @@ Não é necessário instalar dependências, configurar servidor, criar `.env.loc
 ## O que o painel oferece
 
 - Indicadores de eleitores aptos, comparecimento, abstenções e taxa de abstenção.
+- Seleção de várias seções para uma prévia de relatório com totais ponderados e percentuais por seção; impressão do relatório ou salvamento em PDF pelo navegador.
 - Filtros por zona, município e local de votação.
 - Visões por seção, local, consolidados municipais, candidatos e partidos.
 - Resultados presidenciais por seção e candidato para as zonas incluídas no painel.
 - Busca, ordenação de colunas, paginação e exportação dos resultados filtrados em CSV.
 - Consulta offline, sem envio dos dados a um servidor.
 
-O seletor **Votos exibidos** lista os cargos do maior para o menor: Presidente, Governador, Senador, Deputado Federal e Deputado Estadual. Ele altera somente os resultados de votação; aptos, comparecimento e abstenção continuam usando a mesma base por seção. Para Presidente, estão disponíveis as visões por seção, comparação e candidatos; a visão por partido não se aplica porque o recorte por seção não traz essa classificação. Os filtros e indicadores foram compactados para dar mais destaque às tabelas. A ordenação das tabelas pode ser acionada por teclado.
+O seletor **Turno** permite consultar as duas apurações. No 1º turno, **Votos exibidos** lista os cargos do maior para o menor: Presidente, Governador, Senador, Deputado Federal e Deputado Estadual. Ao escolher Presidente, os votos e indicadores usam o detalhamento presidencial do TSE/SISTOT; para os demais cargos, usam o detalhamento estadual. No 2º turno, Presidente é o único cargo disponível e seus votos, aptos, comparecimento e abstenções vêm das respectivas fontes de 25/10. Para Presidente, estão disponíveis as visões por seção, comparação e candidatos; a visão por partido não se aplica porque o recorte por seção não traz essa classificação. A ordenação das tabelas pode ser acionada por teclado.
 
 ## Dados e limites
 
-O painel incorpora dados públicos do TSE para o 1º turno de 2026. A abstenção é calculada como `abstenções ÷ eleitores aptos × 100`; percentuais consolidados são ponderados pelo número de eleitores aptos.
+O painel incorpora dados públicos do TSE para os dois turnos de 2026. No 2º turno, a interface mostra apenas Presidente e usa aptos, comparecimento e abstenções da apuração de 25/10. A abstenção é calculada como `abstenções ÷ eleitores aptos × 100`; percentuais consolidados são ponderados pelo número de eleitores aptos.
 
 Os votos de candidatos e partidos disponíveis no painel estão agregados por município/zona. O filtro de local não transforma esses totais em resultados por seção. A lista de seções apuradas também não deve ser interpretada como uma lista de urnas físicas: seções agregadas e outras situações de apuração podem alterar essa correspondência.
 
-Os votos presidenciais foram extraídos do CSV nacional por seção e cruzados com as 409 seções disponíveis para as Zonas 3 e 30. O recorte local fica em `presidente_2026.js`; o CSV nacional não é carregado pelo navegador. Quatro seções apresentam pequenas diferenças entre a soma dos votos presidenciais e o comparecimento da base estadual. Essas diferenças são preservadas e documentadas; não alteram aptos, comparecimento ou abstenções do painel. Consulte [Fontes e tratamento dos dados](docs/data-sources.md).
+Os recortes presidenciais em `presidente_2026.js` e `presidente_2026_2t.js` combinam votação e comparecimento por ZE, município e seção. No 1º turno, Presidente usa a base presidencial do TSE/SISTOT e fecha os totais municipais dos relatórios. Ela difere da base estadual em aptos e comparecimento em quatro seções, mas mantém as mesmas abstenções. Os CSVs de origem não são carregados pelo navegador. Consulte [Fontes e tratamento dos dados](docs/data-sources.md).
 
 ## Onde os dados ficam
 
-Os dados dos cargos estaduais estão serializados em JSON no elemento `<script id="data" type="application/json">` do HTML. O recorte presidencial fica no arquivo local `presidente_2026.js`. A página carrega ambos junto aos estilos e à lógica JavaScript; não usa `localStorage`, banco de dados ou serviço remoto para guardar os resultados.
+Os dados dos cargos estaduais estão serializados em JSON no elemento `<script id="data" type="application/json">` do HTML. Os recortes presidenciais ficam em `presidente_2026.js` e `presidente_2026_2t.js`. A página carrega esses arquivos locais junto aos estilos e à lógica JavaScript; não usa `localStorage`, banco de dados ou serviço remoto para guardar os resultados.
 
-Os CSVs de origem ficam nas pastas de dados listadas em [Fontes e tratamento dos dados](docs/data-sources.md). Eles não são carregados pelo painel. Para atualizar o recorte presidencial, use `node scripts/import-president.js --write` com o CSV nacional no caminho padrão.
+Os CSVs de origem ficam sob `docs/` e não são carregados pelo painel. Para atualizar o recorte presidencial, use `node scripts/import-president.js --write`; o caminho padrão é `docs/votacao_secao_2026_BR/votacao_secao_2026_BR.csv`.
 
 ## Estrutura
 
@@ -54,23 +59,24 @@ Os CSVs de origem ficam nas pastas de dados listadas em [Fontes e tratamento dos
 ├── styles.css                             # Estilos base
 ├── responsive.css                         # Ajustes para tablet e celular
 ├── presidente_2026.js                     # Recorte local de votos presidenciais
+├── presidente_2026_2t.js                  # Recorte local presidencial do 2º turno
 ├── script.js                              # Filtros, tabelas e exportação
 ├── scripts/import-president.js            # Extrator em fluxo do CSV nacional do TSE
-├── detalhe_votacao_secao_2026/            # Apuração por seção de RO
-├── detalhe_votacao_munzona_2026/          # Consolidados por município/zona
-├── votacao_candidato_munzona_2026/        # Votos por candidato e município/zona
-├── votacao_partido_munzona_2026/          # Votos por partido e município/zona
-├── votacao_secao_2026_BR/                 # Votação nacional por seção, incluindo Presidente
+├── scripts/import-president-2t.js         # Votos e comparecimento presidenciais do 2º turno
 ├── historico_conversa_abstencao_eleicoes_2026.md
-├── docs/
+├── docs/                                  # Documentação e fontes TSE ignoradas pelo Git
+│   ├── detalhe_votacao_secao_2026/
+│   ├── detalhe_votacao_munzona_2026/
+│   └── votacao_secao_2026_BR/
 ├── CHANGELOG.md
 ├── VERSION
 ├── .gitignore
+├── .vercelignore
 ├── .env.example
 └── favicon.svg
 ```
 
-O CSV nacional de votação por seção é grande. Ele não é necessário para abrir o painel; `scripts/import-president.js` extrai somente Presidente nas seções cobertas e gera o arquivo local compacto `presidente_2026.js`.
+Os CSVs nacionais de votação por seção são grandes e não são necessários para abrir o painel. `scripts/import-president.js` atualiza `presidente_2026.js`; `scripts/import-president-2t.js` cruza votação e comparecimento do segundo turno e gera `presidente_2026_2t.js`. Os arquivos regionais de RO rotulados `_2t` estavam desatualizados e não foram usados. Consulte [Fontes e tratamento dos dados](docs/data-sources.md).
 
 ## Atualizar os dados
 
