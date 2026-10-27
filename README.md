@@ -6,7 +6,7 @@ Painel independente, estático e offline para consultar abstenção por seção 
 
 **Escopo:** Ji-Paraná e Presidente Médici, conforme a zona eleitoral
 
-**Versão:** 0.0.8
+**Versão:** 0.0.9
 
 **Documentação revisada em:** 27/10/2026
 
@@ -35,7 +35,7 @@ Não é necessário instalar dependências, configurar servidor, criar `.env.loc
 - Busca, ordenação de colunas, paginação e exportação dos resultados filtrados em CSV.
 - Consulta offline, sem envio dos dados a um servidor.
 
-O seletor **Turno** permite consultar as duas apurações. No 1º turno, **Votos exibidos** lista os cargos do maior para o menor: Presidente, Governador, Senador, Deputado Federal e Deputado Estadual. Ao escolher Presidente, os votos e indicadores usam o detalhamento presidencial do TSE/SISTOT; para os demais cargos, usam o detalhamento estadual. No 2º turno, Presidente é o único cargo disponível e seus votos, aptos, comparecimento e abstenções vêm das respectivas fontes de 25/10. Para Presidente, estão disponíveis as visões por seção, comparação e candidatos; a visão por partido não se aplica porque o recorte por seção não traz essa classificação. A ordenação das tabelas pode ser acionada por teclado.
+O seletor **Turno** abre no 2º turno e permite consultar as duas apurações. No 1º turno, **Votos exibidos** lista os cargos do maior para o menor: Presidente, Governador, Senador, Deputado Federal e Deputado Estadual. Ao escolher Presidente, os votos e indicadores usam o detalhamento presidencial do TSE/SISTOT; para os demais cargos, usam o detalhamento estadual. No 2º turno, Presidente é o único cargo disponível e seus votos, aptos, comparecimento e abstenções vêm das respectivas fontes de 25/10. Para Presidente, estão disponíveis as visões por seção, comparação e candidatos; a visão por partido não se aplica porque o recorte por seção não traz essa classificação. A ordenação das tabelas pode ser acionada por teclado.
 
 ## Dados e limites
 

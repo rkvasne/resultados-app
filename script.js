@@ -21,7 +21,7 @@ const officeOrder = ['Presidente', 'Governador', 'Senador', 'Deputado Federal', 
 function addTurnFilter() {
   const field = document.createElement('div');
   field.className = 'field turn-field';
-  field.innerHTML = '<label for="turn">Turno</label><select id="turn" aria-label="Turno da eleição"><option value="1">1º turno · 04/10/2026</option><option value="2">2º turno · 25/10/2026</option></select>';
+  field.innerHTML = '<label for="turn">Turno</label><select id="turn" aria-label="Turno da eleição"><option value="1">1º turno · 04/10/2026</option><option value="2" selected>2º turno · 25/10/2026</option></select>';
   document.querySelector('.filters').prepend(field);
 }
 

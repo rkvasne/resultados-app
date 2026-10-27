@@ -2,6 +2,16 @@
 
 Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/). A primeira versão publicada é `0.0.1`.
 
+## [0.0.9] - 2026-10-27
+
+### Alterado
+
+- Definido o 2º turno como seleção inicial para apresentar os dados mais recentes e evitar gerar relatórios do turno incorreto por engano.
+
+### Verificado
+
+- Revalidados os dados do 2º turno nas fontes TSE: 409 seções, 1505 linhas de votação cruzadas, aptos 113629, comparecimento 88307, abstenções 25322 e nenhuma divergência entre votos e comparecimento.
+
 ## [0.0.8] - 2026-10-27
 
 ### Corrigido
