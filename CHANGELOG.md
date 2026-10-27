@@ -2,6 +2,22 @@
 
 Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/). A primeira versão publicada é `0.0.1`.
 
+## [0.0.12] - 2026-10-27
+
+### Melhorado
+
+- Alinhados contador, busca, exportação e limpeza em uma única linha em telas largas; em telas estreitas, busca e ações mantêm uma disposição adaptada.
+
+### Verificado
+
+- Controles conferidos no navegador em 1536 px e 390 px; a página mantém sua largura e a visualização móvel continua organizada.
+- `git diff --check` sem erros. O repositório não possui `package.json` ou suíte automatizada.
+
+### Aprendizado
+
+- Fato observado: o grupo de busca e ações quebrava em duas linhas no desktop apesar de haver espaço horizontal.
+- Ação aplicada: grade explícita para alinhar os controles em uma linha e manter a quebra apenas em larguras móveis.
+
 ## [0.0.11] - 2026-10-27
 
 ### Melhorado
