@@ -383,4 +383,21 @@ header p {
 .report-table .num { text-align:right; font-variant-numeric:tabular-nums; }
 .report-footer { margin-top:14px; color:var(--muted); font-size:10px; text-align:right; }
 @media (max-width:700px) { .selection-toolbar { align-items:stretch; } .selection-toolbar .tools { width:100%; } .selection-toolbar .btn { flex:1; } .report-preview { padding:16px; } .report-metrics { grid-template-columns:repeat(2,minmax(0,1fr)); } .report-dialog-actions { justify-content:stretch; } .report-dialog-actions .btn { flex:1; } }
-@media print { @page { size:landscape; margin:12mm; } body * { visibility:hidden !important; } #report-dialog[open], #report-dialog[open] * { visibility:visible !important; } #report-dialog[open] { position:absolute; inset:0 auto auto 0; width:100%; max-width:none; max-height:none; overflow:visible; border:0; border-radius:0; box-shadow:none; } #report-dialog::backdrop { display:none; } .report-dialog-actions { display:none !important; } .report-preview { padding:0; } .report-heading, .report-metrics, .report-method { break-inside:avoid; } .report-table-wrap { overflow:visible; border:0; } .report-table { white-space:normal; font-size:8pt; } .report-table th, .report-table td { padding:4px 5px; } .report-table th { background:#e9edf4 !important; color:#111 !important; } .report-metric { padding:7px; } .report-metric strong { font-size:14px; } .report-footer { margin-top:8px; } }
+@media print {
+  @page { size:landscape; margin:12mm; }
+  html, body { width:100%; height:auto; margin:0!important; padding:0!important; background:#fff!important; }
+  body > :not(#report-dialog) { display:none!important; }
+  #report-dialog[open] { display:block; position:static; inset:auto; width:100%; max-width:none; max-height:none; margin:0; padding:0; overflow:visible; border:0; border-radius:0; box-shadow:none; }
+  #report-dialog::backdrop { display:none; }
+  .report-dialog-actions { display:none!important; }
+  .report-preview { padding:0; }
+  .report-heading, .report-metrics, .report-method { break-inside:avoid; }
+  .report-table-wrap { overflow:visible; border:0; }
+  .report-table { white-space:normal; font-size:8pt; }
+  .report-table tr, .report-footer { break-inside:avoid; }
+  .report-table th, .report-table td { padding:4px 5px; }
+  .report-table th { background:#e9edf4!important; color:#111!important; }
+  .report-metric { padding:7px; }
+  .report-metric strong { font-size:14px; }
+  .report-footer { margin-top:8px; }
+}

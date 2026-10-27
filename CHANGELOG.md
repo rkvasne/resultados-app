@@ -2,6 +2,12 @@
 
 Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/). A primeira versão publicada é `0.0.1`.
 
+## [0.0.8] - 2026-10-27
+
+### Corrigido
+
+- Ajustada a regra de impressão do relatório para remover o layout do painel e evitar uma página extra em branco no PDF.
+
 ## [0.0.7] - 2026-10-27
 
 ### Adicionado
