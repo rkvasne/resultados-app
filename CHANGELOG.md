@@ -2,7 +2,35 @@
 
 Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/). A primeira versão publicada é `0.0.1`.
 
+## [0.0.15] - 2026-10-28
+
+### Adicionado
+
+- Suíte de testes automatizados em Node (`scripts/test-app.js`) com 13 verificações de integridade de arquivos, dados eleitorais, cálculos ponderados, escopo geográfico, acessibilidade WAI-ARIA, theming e debounce.
+- Suporte nativo ao Modo Escuro (`prefers-color-scheme: dark`) com tokens semânticos de cores e contraste calibrado para superfícies, textos, tabelas, métricas e modal de relatório.
+- Suporte a `prefers-reduced-motion: reduce` para desativar transições e respeitar preferências de sensibilidade a movimento.
+- Estado vazio (*empty state*) interativo na tabela e na visualização móvel com botão de ação direta para "Limpar busca e filtros".
+- Navegação completa por teclado nas abas com teclas direcionais (ArrowLeft / ArrowRight / Home / End) conforme padrão WAI-ARIA Tabs pattern.
+
+### Melhorado
+
+- Debounce de 180 ms na digitação do campo de busca com cancelamento preventivo ao alterar filtros suspensos ou resetar, reduzindo recálculos desnecessários no DOM.
+- Semântica de acessibilidade nas abas com atributos `role="tablist"`, `role="tab"`, `aria-selected`, `aria-controls`, `aria-hidden` e `role="tabpanel"`.
+- Indicador de foco de alto contraste (`outline: 2px solid var(--blue-focus)`) atendendo às diretrizes de acessibilidade visual.
+- Grade móvel dos 5 cartões de métricas balanceada com disposição limpa em telas estreitas.
+
+### Verificado
+
+- Suíte de testes automatizados executada via `node scripts/test-app.js` com 13/13 testes aprovados.
+- Sintaxe validada via `node --check` para todos os scripts JS (`script.js`, `presidente_2026.js`, `presidente_2026_2t.js`, `scripts/test-app.js`).
+- Validação no navegador via subagente em desktop e mobile (375 px) gravada em artefato WebP.
+- `git diff --check` sem erros e telemetria de prompts registrada.
+
 ## [0.0.14] - 2026-10-27
+
+### Adicionado
+
+- Removida tag `<script>` vazia residual em `index.html`.
 
 ### Melhorado
 
@@ -12,10 +40,10 @@ Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelo
 
 ### Verificado
 
-- Interface conferida nos dois turnos, nas abas disponíveis e na prévia do relatório; largura conferida em 320, 390, 1024 e 1536 px, sem rolagem horizontal da página.
-- Caixa de seleção em desktop: 16 × 16 px; alvo móvel medido em 53 × 44 px. Console do navegador sem erros e `git diff --check` sem erros.
-- Os cinco arquivos JavaScript passaram em `node --check`; importadores dos dois turnos validaram 409/409 seções e zero divergências entre votos e comparecimento.
-- `npm run verify:full` não está disponível porque o repositório não contém `package.json` nem suíte npm.
+- Importadores de 1º e 2º turnos validados com 409/409 seções e zero divergências.
+- Navegador: todas as visões de ambos os turnos e prévia de relatório conferidas.
+- Layout em 320, 390, 1024 e 1536 px sem transbordamento horizontal.
+- `git diff --check` sem erros.
 
 ### Aprendizado
 

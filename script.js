@@ -12,6 +12,7 @@ let page = 0;
 let sortKey = '';
 let sortDir = -1;
 let search = '';
+let searchDebounceTimer;
 let rowsCurrent = [];
 let colCurrent = [];
 const selectedSections = new Set();
@@ -328,12 +329,18 @@ function show() {
   const presidentSelected = $('office').value === 'Presidente';
   const partiesTab = document.querySelector('[data-tab="parties"]');
   partiesTab.classList.toggle('hidden', presidentSelected);
+  partiesTab.setAttribute('aria-hidden', String(presidentSelected));
   if (presidentSelected && tab === 'parties') tab = 'sections';
   document.querySelectorAll('.tab').forEach(element => {
     const selected = element.dataset.tab === tab;
     element.classList.toggle('active', selected);
-    element.setAttribute('aria-pressed', String(selected));
+    element.setAttribute('aria-selected', String(selected));
+    element.setAttribute('tabindex', selected ? '0' : '-1');
   });
+  const tabContent = $('tabcontent');
+  if (tabContent) {
+    tabContent.setAttribute('aria-labelledby', `tab-${tab}`);
+  }
   renderMetrics();
   const data = dataForTab();
   let rows = data.rows.filter(row => !search || Object.values(row).some(value => String(value).toLocaleLowerCase('pt-BR').includes(search)));
@@ -352,13 +359,14 @@ function show() {
     return `<td class="${typeof row[key] === 'number' ? 'num' : ''}" data-label="${escapeHtml(label)}">${value ?? ''}</td>`;
   }).join('') + '</tr>').join('');
   const titles = { sections: 'Abstenção e votos por seção', places: 'Consolidado por local de votação', comparison: 'Comparativo eleitoral', candidates: 'Votação nominal por candidato', parties: 'Votação por partido' };
+  const emptyMessage = '<div class="empty-state"><p class="empty-text">Nenhum resultado corresponde aos filtros ou à busca.</p><button class="btn btn-empty-reset" type="button">Limpar busca e filtros</button></div>';
   const mobileCards = pageRows.map(row => renderMobileCard(row, data, selectable)).join('');
-  $('tabcontent').innerHTML = `<section class="panel"><h2>${titles[tab]}</h2><p class="hint">${data.description}</p>${selectable ? `<div class="selection-toolbar"><div><strong id="selection-count"></strong><span> A seleção é mantida ao alterar os filtros.</span></div><div class="tools"><button class="btn" id="toggle-page-selection">Selecionar página</button><button class="btn" id="preview-report" ${selectedSections.size ? '' : 'disabled'}>Prévia do relatório</button><button class="btn" id="clear-selection" ${selectedSections.size ? '' : 'disabled'}>Limpar seleção</button></div></div>` : ''}<div class="toolbar"><div class="result-count"><b>${fmt(rows.length)}</b> registros encontrados</div><div class="tools"><input class="search" id="q" value="${escapeHtml(search)}" placeholder="Buscar nome, seção, município..." aria-label="Buscar na tabela"><button class="btn" id="download">Exportar CSV filtrado</button><button class="btn" id="reset" ${search ? '' : 'disabled'}>Limpar busca</button></div></div><div class="mobile-sort"><label for="mobile-sort">Ordenar por</label><select id="mobile-sort">${data.columns.map(([key, label]) => `<option value="${escapeHtml(key)}" ${sortKey === key ? 'selected' : ''}>${escapeHtml(label)}</option>`).join('')}</select><button class="btn" type="button" id="mobile-sort-direction" aria-label="Alternar para ordem ${sortDir === 1 ? 'decrescente' : 'crescente'}">${sortDir === 1 ? 'Crescente ↑' : 'Decrescente ↓'}</button></div><div class="mobile-results" role="list" aria-label="Resultados da consulta">${mobileCards || '<p class="mobile-empty">Nenhum resultado corresponde aos filtros. Ajuste a busca ou os filtros para continuar.</p>'}</div><div class="table-wrap"><table><thead><tr>${selectable ? '<th class="selection-cell">Selecionar</th>' : ''}${data.columns.map(([key, label]) => {
+  $('tabcontent').innerHTML = `<section class="panel"><h2>${titles[tab]}</h2><p class="hint">${data.description}</p>${selectable ? `<div class="selection-toolbar"><div><strong id="selection-count"></strong><span> A seleção é mantida ao alterar os filtros.</span></div><div class="tools"><button class="btn" id="toggle-page-selection">Selecionar página</button><button class="btn" id="preview-report" ${selectedSections.size ? '' : 'disabled'}>Prévia do relatório</button><button class="btn" id="clear-selection" ${selectedSections.size ? '' : 'disabled'}>Limpar seleção</button></div></div>` : ''}<div class="toolbar"><div class="result-count"><b>${fmt(rows.length)}</b> registros encontrados</div><div class="tools"><input class="search" id="q" value="${escapeHtml(search)}" placeholder="Buscar nome, seção, município..." aria-label="Buscar na tabela"><button class="btn" id="download">Exportar CSV filtrado</button><button class="btn" id="reset" ${search ? '' : 'disabled'}>Limpar busca</button></div></div><div class="mobile-sort"><label for="mobile-sort">Ordenar por</label><select id="mobile-sort">${data.columns.map(([key, label]) => `<option value="${escapeHtml(key)}" ${sortKey === key ? 'selected' : ''}>${escapeHtml(label)}</option>`).join('')}</select><button class="btn" type="button" id="mobile-sort-direction" aria-label="Alternar para ordem ${sortDir === 1 ? 'decrescente' : 'crescente'}">${sortDir === 1 ? 'Crescente ↑' : 'Decrescente ↓'}</button></div><div class="mobile-results" role="list" aria-label="Resultados da consulta">${mobileCards || `<div class="mobile-empty">${emptyMessage}</div>`}</div><div class="table-wrap"><table><thead><tr>${selectable ? '<th class="selection-cell">Selecionar</th>' : ''}${data.columns.map(([key, label]) => {
     const isSorted = sortKey === key;
     const direction = sortDir === 1 ? 'ascending' : 'descending';
     const indicator = isSorted ? (sortDir === 1 ? '↑' : '↓') : '';
     return `<th data-key="${key}" class="${typeof rows[0]?.[key] === 'number' ? 'num' : ''}" aria-sort="${isSorted ? direction : 'none'}"><button class="sort-button" type="button" aria-label="Ordenar por ${label}">${label}<span aria-hidden="true">${indicator}</span></button></th>`;
-  }).join('')}</tr></thead><tbody>${body || `<tr><td colspan="${data.columns.length + (selectable ? 1 : 0)}">Nenhum resultado corresponde aos filtros.</td></tr>`}</tbody></table></div><div class="page-controls"><span>Página ${page + 1} de ${totalPages} · Até 50 registros por página</span><div class="tools"><button class="btn" id="prev" ${page === 0 ? 'disabled' : ''}>Anterior</button><button class="btn" id="next" ${page >= totalPages - 1 ? 'disabled' : ''}>Próxima</button></div></div></section>`;
+  }).join('')}</tr></thead><tbody>${body || `<tr><td colspan="${data.columns.length + (selectable ? 1 : 0)}" class="empty-cell">${emptyMessage}</td></tr>`}</tbody></table></div><div class="page-controls"><span>Página ${page + 1} de ${totalPages} · Até 50 registros por página</span><div class="tools"><button class="btn" id="prev" ${page === 0 ? 'disabled' : ''}>Anterior</button><button class="btn" id="next" ${page >= totalPages - 1 ? 'disabled' : ''}>Próxima</button></div></div></section>`;
   updateSelectionControls();
   if (selectable) {
     $('toggle-page-selection').onclick = () => {
@@ -373,16 +381,51 @@ function show() {
     $('clear-selection').onclick = () => { selectedSections.clear(); show(); };
   }
   $('q').addEventListener('input', event => {
-    search = event.target.value;
-    page = 0;
+    const val = event.target.value;
     const position = event.target.selectionStart;
-    show();
-    const input = $('q');
-    input.focus();
-    input.setSelectionRange(position, position);
+    clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(() => {
+      search = val;
+      page = 0;
+      show();
+      const input = $('q');
+      if (input) {
+        input.focus();
+        input.setSelectionRange(position, position);
+      }
+    }, 180);
+  });
+  $('q').addEventListener('keydown', event => {
+    if (event.key === 'Enter') {
+      clearTimeout(searchDebounceTimer);
+      search = event.target.value;
+      page = 0;
+      show();
+    }
+  });
+  document.querySelectorAll('.btn-empty-reset').forEach(btn => {
+    btn.onclick = () => {
+      clearTimeout(searchDebounceTimer);
+      search = '';
+      page = 0;
+      $('zone').value = '';
+      $('city').value = '';
+      $('place').value = '';
+      updatePlaces();
+      show();
+      const input = $('q');
+      if (input) input.focus();
+    };
   });
   $('download').onclick = download;
-  $('reset').onclick = () => { search = ''; page = 0; show(); };
+  $('reset').onclick = () => {
+    clearTimeout(searchDebounceTimer);
+    search = '';
+    page = 0;
+    show();
+    const input = $('q');
+    if (input) input.focus();
+  };
   $('mobile-sort').value = sortKey || data.columns[0][0];
   $('mobile-sort').onchange = event => { sortKey = event.target.value; sortDir = -1; page = 0; show(); };
   $('mobile-sort-direction').onclick = () => { sortDir *= -1; show(); };
@@ -426,8 +469,8 @@ function download() {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-for (const id of ['zone', 'city']) $(id).onchange = () => { updatePlaces(); page = 0; show(); };
-for (const id of ['place', 'office']) $(id).onchange = () => { page = 0; if (id === 'office') updateTurn(); show(); };
+for (const id of ['zone', 'city']) $(id).onchange = () => { clearTimeout(searchDebounceTimer); updatePlaces(); page = 0; show(); };
+for (const id of ['place', 'office']) $(id).onchange = () => { clearTimeout(searchDebounceTimer); page = 0; if (id === 'office') updateTurn(); show(); };
 document.addEventListener('change', event => {
   if (event.target.matches('.section-select')) {
     const key = event.target.dataset.sectionKey;
@@ -437,6 +480,7 @@ document.addEventListener('change', event => {
     return;
   }
   if (event.target.id !== 'turn') return;
+  clearTimeout(searchDebounceTimer);
   page = 0;
   search = '';
   sortKey = '';
@@ -454,6 +498,24 @@ document.querySelectorAll('.tab').forEach(element => element.onclick = () => {
   search = '';
   show();
 });
+const tabList = $('tabs');
+if (tabList) {
+  tabList.addEventListener('keydown', event => {
+    const tabs = [...tabList.querySelectorAll('.tab:not(.hidden)')];
+    const index = tabs.indexOf(document.activeElement);
+    if (index === -1) return;
+    let target = -1;
+    if (event.key === 'ArrowRight') target = (index + 1) % tabs.length;
+    else if (event.key === 'ArrowLeft') target = (index - 1 + tabs.length) % tabs.length;
+    else if (event.key === 'Home') target = 0;
+    else if (event.key === 'End') target = tabs.length - 1;
+    if (target !== -1) {
+      event.preventDefault();
+      tabs[target].focus();
+      tabs[target].click();
+    }
+  });
+}
 addTurnFilter();
 addReportDialog();
 orderOfficeOptions();
