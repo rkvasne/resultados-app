@@ -287,7 +287,30 @@ test('Sistema de feedback tátil e avisos contextuais (toasts) está configurado
 
 test('Tokens de cores em banners e toasts usam variáveis válidas (:root) sem var(--text) órfão', () => {
   assert.ok(!stylesCss.includes('var(--text)'), 'styles.css não deve conter a variável inexistente var(--text)');
-  assert.ok(stylesCss.includes('.error-boundary-banner {\n  background: var(--card);\n  border: 1px solid var(--red);\n  border-left: 5px solid var(--red);\n  border-radius: 8px;\n  padding: 16px 20px;\n  margin-bottom: 20px;\n  color: var(--ink);') || stylesCss.includes('color: var(--ink);'), 'deve usar var(--ink) como cor canônica de texto');
+  assert.ok(stylesCss.includes('color: var(--ink);'), 'deve usar var(--ink) como cor canônica de texto');
+});
+
+// 11. Harmonia Visual, Badges e Tipografia Refinada
+console.log('\n[11] Harmonia Visual, Badges e Design Moderno:');
+
+test('Cabeçalho possui estrutura limpa com badges semânticos e sem mistura de bullets e traços', () => {
+  assert.ok(indexHtml.includes('class="header-badges"'), 'index.html deve conter container de badges no cabeçalho');
+  assert.ok(indexHtml.includes('badge-accent') && indexHtml.includes('badge-primary'), 'index.html deve ter badges estilizados');
+  assert.ok(!indexHtml.includes('<h1>Resultados — Eleições 2026 · 25/10/2026</h1>'), 'index.html não deve ter o título antigo com traço e bullet truncados');
+  assert.ok(indexHtml.includes('<h1>Resultados Eleitorais</h1>'), 'index.html deve ter título principal limpo');
+});
+
+test('Métricas usam peso semibold elegante (font-weight: 600) e não o peso grotesco 850', () => {
+  assert.ok(!stylesCss.includes('font-weight: 850'), 'styles.css não deve usar font-weight: 850 nas métricas');
+  assert.ok(stylesCss.includes('.metric .value {\n  font-size: clamp(20px, 2vw, 26px);\n  font-weight: 600;') || stylesCss.includes('font-weight: 600;'), 'styles.css deve usar font-weight: 600');
+  assert.ok(!responsiveCss.includes('font-weight: 800; font-variant-numeric: tabular-nums;'), 'responsive.css não deve forçar peso 800');
+});
+
+test('Botões de ação contêm ícones SVG inline e contadores utilizam badges', () => {
+  assert.ok(scriptJs.includes('btn-icon'), 'script.js deve incluir classe btn-icon para ícones de botões');
+  assert.ok(scriptJs.includes('badge-subtle'), 'script.js deve usar badge-subtle para contador de registros');
+  assert.ok(scriptJs.includes('badge-selection'), 'script.js deve usar badge-selection na barra de seleção');
+  assert.ok(stylesCss.includes('.btn-icon'), 'styles.css deve estilizar .btn-icon');
 });
 
 console.log(`\n=== Resultado: ${passedTests}/${totalTests} testes aprovados com sucesso! ===\n`);

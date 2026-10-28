@@ -2,6 +2,27 @@
 
 Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/). A primeira versão publicada é `0.0.1`.
 
+## [0.0.17] - 2026-10-28
+
+### Adicionado
+
+- Cabeçalho reformulado com hierarquia limpa e badges visuais semânticos em chips (`Eleições 2026`, `2º Turno`, `Zonas 3 e 30` e `● Dados Oficiais TSE`), eliminando pontuações artificiais soltas (`·` e `—`).
+- Ícones vetoriais SVG inline minimalistas e leves integrados em todos os botões de ação (exportação CSV, visualização de relatório, cópia de resumo, limpeza de filtros, alternância de seleção e paginação).
+- Badges de contagem e status para total de registros encontrados e seções selecionadas na barra de ferramentas.
+- Três novos testes automatizados em `scripts/test-app.js` (totalizando 23 testes) validando estrutura do cabeçalho, badges, peso de métricas e ícones SVG.
+
+### Melhorado
+
+- Calibração da tipografia dos cartões de métricas: redução do peso dos números de `850` (extra-bold ruidoso) para `600` (semibold harmonioso), mantendo alinhamento numérico `tabular-nums`.
+- Restauração e refinamento dos subtextos contextuais das métricas para leitura clara sem poluição visual.
+- Rótulos dos botões simplificados e mais diretos ("Exportar CSV", "Ver Relatório", "Limpar").
+
+### Verificado
+
+- 23/23 testes automatizados aprovados na suíte `scripts/test-app.js`.
+- Sintaxe validada via `node --check` em todos os scripts JavaScript da aplicação.
+- `git diff --check` sem erros de formatação ou caracteres indesejados.
+
 ## [0.0.16] - 2026-10-28
 
 ### Adicionado
