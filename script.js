@@ -182,9 +182,11 @@ function addReportDialog() {
   const dialog = document.createElement('dialog');
   dialog.id = 'report-dialog';
   dialog.setAttribute('aria-labelledby', 'report-title');
-  dialog.innerHTML = '<div class="report-dialog-actions"><button class="btn" type="button" id="close-report"><svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> Voltar ao painel</button><button class="btn" type="button" id="copy-report-summary"><svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copiar resumo</button><button class="btn report-print" type="button" id="print-report"><svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg> Imprimir / Salvar PDF</button></div><article id="report-preview" class="report-preview"></article>';
+  dialog.innerHTML = '<div class="report-dialog-actions"><button class="btn" type="button" id="close-report"><svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> Voltar ao painel</button><button class="btn" type="button" id="copy-report-summary"><svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copiar resumo</button><button class="btn report-print" type="button" id="print-report"><svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg> Imprimir / Salvar PDF</button><button class="dialog-close-btn" type="button" id="dialog-close-x" aria-label="Fechar janela"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div><article id="report-preview" class="report-preview"></article>';
   document.body.append(dialog);
   $('close-report').addEventListener('click', () => dialog.close());
+  const closeX = $('dialog-close-x');
+  if (closeX) closeX.addEventListener('click', () => dialog.close());
   $('copy-report-summary').addEventListener('click', () => copySummaryToClipboard(reportRows()));
   $('print-report').addEventListener('click', () => window.print());
   dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
@@ -601,17 +603,38 @@ function show() {
   });
 }
 
+function updateMainProvenance() {
+  const container = $('provenance-details');
+  if (!container) return;
+  const turn = $('turn')?.value || '2';
+  const date = turn === '2' ? '25/10/2026' : '04/10/2026';
+  const cargo = turn === '2' ? 'Presidente' : ($('office')?.value || 'Presidente');
+  const isPresident = turn === '2' || cargo === 'Presidente';
+  const electionCode = turn === '2' ? '6258' : isPresident ? '6257' : '6259';
+  const sources = reportSources();
+  const sourceItems = sources.map(source => {
+    const fileName = new URL(source.url).pathname.split('/').pop();
+    return `<li><strong>${escapeHtml(source.label)}:</strong> <a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(fileName)}</a>${source.generated ? ` · geração informada no CSV: ${escapeHtml(source.generated)}` : ' · data de geração não informada'}</li>`;
+  }).join('');
+  container.innerHTML = `<p>Dados oficiais fornecidos pelo Tribunal Superior Eleitoral (TSE) para as Eleições Gerais de 2026 (Eleição ${electionCode}, ${turn}º turno, em ${date}) em Rondônia (Zonas Eleitorais 3 e 30 — Ji-Paraná e Presidente Médici).</p><ul>${sourceItems}</ul><p>Portal público: <a href="https://dadosabertos.tse.jus.br/" target="_blank" rel="noopener noreferrer">Dados Abertos do TSE</a> · Conjunto de dados: <a href="https://dadosabertos.tse.jus.br/dataset/resultados-2026" target="_blank" rel="noopener noreferrer">Resultados 2026</a>. Indicadores e taxas calculados diretamente no navegador a partir dos totais de cada seção apurada.</p>`;
+}
+
 function updateTurn() {
   const secondTurn = $('turn').value === '2';
-  const electionDate = secondTurn ? '25/10/2026' : '04/10/2026';
-  const appTitle = `Resultados — Eleições 2026 · ${electionDate}`;
   const presidentSelected = $('office').value === 'Presidente';
   if (secondTurn) $('office').value = 'Presidente';
-  document.querySelector('header h1').textContent = appTitle;
-  document.title = appTitle;
+  const titleHeading = document.querySelector('header h1');
+  if (titleHeading) titleHeading.textContent = 'Resultados Eleitorais 2026';
+  document.title = secondTurn
+    ? 'Resultados Eleitorais 2026 — 2º Turno (25/10/2026)'
+    : 'Resultados Eleitorais 2026 — 1º Turno (04/10/2026)';
+  const turnBadge = $('header-turn-badge');
+  if (turnBadge) turnBadge.textContent = secondTurn ? '2º Turno (25/10/2026)' : '1º Turno (04/10/2026)';
+  const subtitle = $('header-subtitle');
+  if (subtitle) subtitle.textContent = `Apuração e abstenção oficial em Rondônia · ${secondTurn ? '2º Turno' : '1º Turno'}`;
   updatePlaces();
   updateOfficeGuidance();
-  document.querySelector('header p').textContent = `Painel independente · Dados públicos do TSE · Rondônia · ${$('turn').value}º turno.`;
+  updateMainProvenance();
   document.querySelector('.note').innerHTML = secondTurn
     ? '<b>Como interpretar:</b> No 2º turno, os indicadores de aptos, comparecimento e abstenção vêm do detalhe presidencial por seção de 25/10/2026. Os votos presidenciais vêm do arquivo de votação por seção do mesmo turno. A taxa geral é ponderada pelos eleitores aptos.'
     : presidentSelected

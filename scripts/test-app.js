@@ -297,7 +297,7 @@ test('Cabeçalho possui estrutura limpa com badges semânticos e sem mistura de 
   assert.ok(indexHtml.includes('class="header-badges"'), 'index.html deve conter container de badges no cabeçalho');
   assert.ok(indexHtml.includes('badge-accent') && indexHtml.includes('badge-primary'), 'index.html deve ter badges estilizados');
   assert.ok(!indexHtml.includes('<h1>Resultados — Eleições 2026 · 25/10/2026</h1>'), 'index.html não deve ter o título antigo com traço e bullet truncados');
-  assert.ok(indexHtml.includes('<h1>Resultados Eleitorais</h1>'), 'index.html deve ter título principal limpo');
+  assert.ok(indexHtml.includes('<h1>Resultados Eleitorais 2026</h1>') || indexHtml.includes('<h1>Resultados Eleitorais</h1>'), 'index.html deve ter título principal limpo');
 });
 
 test('Métricas usam peso semibold elegante (font-weight: 600) e não o peso grotesco 850', () => {
@@ -311,6 +311,31 @@ test('Botões de ação contêm ícones SVG inline e contadores utilizam badges'
   assert.ok(scriptJs.includes('badge-subtle'), 'script.js deve usar badge-subtle para contador de registros');
   assert.ok(scriptJs.includes('badge-selection'), 'script.js deve usar badge-selection na barra de seleção');
   assert.ok(stylesCss.includes('.btn-icon'), 'styles.css deve estilizar .btn-icon');
+});
+
+test('Modal de relatório inclui botão X explícito de fechar janela', () => {
+  assert.ok(scriptJs.includes('dialog-close-btn'), 'script.js deve conter a classe dialog-close-btn');
+  assert.ok(scriptJs.includes('id="dialog-close-x"'), 'script.js deve conter o botão #dialog-close-x');
+  assert.ok(stylesCss.includes('.dialog-close-btn'), 'styles.css deve estilizar o botão .dialog-close-btn');
+});
+
+test('Página principal contém seção de fontes de dados oficiais do TSE', () => {
+  assert.ok(indexHtml.includes('id="main-provenance"'), 'index.html deve conter o container #main-provenance');
+  assert.ok(indexHtml.includes('id="provenance-details"'), 'index.html deve conter o container #provenance-details');
+  assert.ok(scriptJs.includes('updateMainProvenance()'), 'script.js deve declarar e invocar updateMainProvenance()');
+  assert.ok(stylesCss.includes('.provenance-panel'), 'styles.css deve conter estilos para .provenance-panel');
+});
+
+test('updateTurn não sobrescreve o título h1 com separadores misturados', () => {
+  assert.ok(!scriptJs.includes('appTitle = `Resultados — Eleições 2026 · ${electionDate}`'), 'script.js não deve ter string com travessão e bullet misturados');
+  assert.ok(scriptJs.includes("titleHeading.textContent = 'Resultados Eleitorais 2026'"), 'script.js deve manter título limpo');
+});
+
+test('Primeira dobra possui layout compacto com header horizontal e filtros reduzidos', () => {
+  assert.ok(stylesCss.includes('padding: 10px max(20px, calc((100vw - 1340px) / 2));'), 'header deve ter padding compacto de 10px');
+  assert.ok(stylesCss.includes('flex-direction: row;'), 'header-inner deve usar layout em linha flexível');
+  assert.ok(stylesCss.includes('height: 34px;'), 'inputs e selects devem ter altura compacta de 34px');
+  assert.ok(stylesCss.includes('padding: 8px 12px;'), 'filtros e métricas devem ter padding compacto');
 });
 
 console.log(`\n=== Resultado: ${passedTests}/${totalTests} testes aprovados com sucesso! ===\n`);

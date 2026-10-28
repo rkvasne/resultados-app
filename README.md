@@ -1,4 +1,4 @@
-# Resultados — Eleições 2026 · 25/10/2026
+# Resultados Eleitorais 2026
 
 Painel independente, estático e offline para consultar abstenção por seção e resultados eleitorais das Zonas Eleitorais 3 e 30 de Rondônia, com dados públicos do TSE.
 
@@ -6,7 +6,7 @@ Painel independente, estático e offline para consultar abstenção por seção 
 
 **Escopo:** Ji-Paraná e Presidente Médici, conforme a zona eleitoral
 
-**Versão:** 0.0.17
+**Versão:** 0.0.18
 
 **Documentação revisada em:** 28/10/2026
 

@@ -2,6 +2,29 @@
 
 Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/). A primeira versão publicada é `0.0.1`.
 
+## [0.0.18] - 2026-10-28
+
+### Adicionado
+
+- Botão explícito de fechar janela com ícone "X" (`#dialog-close-x` / `.dialog-close-btn`) no modal de relatório com hit area acessível, efeito hover e suporte a tecla Escape e clique fora.
+- Seção canônica de fontes oficiais e critérios dos dados (`#main-provenance` / `.provenance-panel`) diretamente na página principal, exibindo arquivos oficiais do TSE, código da eleição, data/hora de geração do CSV e metodologia de cálculo ponderado.
+- Expansão da suíte automatizada de testes para 27 testes aprovados em `scripts/test-app.js`.
+
+### Melhorado
+
+- Resolução definitiva do conflito de separadores no título: remoção da sobrescrita em tempo de execução via `updateTurn()` que gerava `Resultados — Eleições 2026 · 25/10/2026`. Título padronizado para `Resultados Eleitorais 2026` com dados de turno e data exibidos nos badges semânticos e no subtítulo fluido.
+- Otimização de densidade visual na primeira dobra (*above the fold*):
+  - Cabeçalho reorganizado em barra horizontal compacta (`10px` de padding vertical) com título à esquerda e chips/badges à direita.
+  - Barra de filtros compactada com inputs e selects de altura `34px`, labels de `10px` e textos explicativos contidos.
+  - Cartões de métricas compactados com padding de `8px 12px` e números semibold de `20px`.
+  - Abas, painéis e barras de ferramentas com espaçamentos otimizados, garantindo que os primeiros registros e a tabela de dados apareçam imediatamente na primeira dobra da tela.
+
+### Verificado
+
+- 27/27 testes automatizados aprovados na suíte `scripts/test-app.js`.
+- Sintaxe validada via `node --check` em todos os scripts JavaScript da aplicação.
+- `git diff --check` sem erros de formatação.
+
 ## [0.0.17] - 2026-10-28
 
 ### Adicionado
