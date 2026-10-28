@@ -2,6 +2,30 @@
 
 Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/). A primeira versão publicada é `0.0.1`.
 
+## [0.0.20] - 2026-10-28
+
+### Melhorado
+
+- **Eliminação de rótulos em uppercase forçado:**
+  - Remoção de `text-transform: uppercase` em todos os rótulos de campos (`.field label`), nomes de métricas (`.metric .name`), cabeçalhos de tabela (`th`) e badges.
+  - Adoção de formatação natural em *Sentence case* (`Zona eleitoral`, `Município`, `Local de votação`, `Taxa de abstenção`, `Comparecimento`), proporcionando maior legibilidade e sofisticação visual contemporânea.
+- **Redesign completo dos cartões estatísticos (KPI Cards):**
+  - Substituição da antiga barra única fatiada com divisores verticais rígidos por 5 cartões estatísticos autônomos e elegantes.
+  - Cada cartão possui container independente com cantos arredondados (`border-radius: 10px`), bordas sutis (`var(--line)`), elevação em camadas suaves (`var(--shadow-card)`), e efeito de hover flutuante com transição suave (`transform: translateY(-1px)`).
+  - Cartão de "Taxa de abstenção" com destaque contextual em gradiente suave Rose e borda colorida refinada.
+- **Esquema de cores ultra-moderno (Slate & Tailwind UI):**
+  - Paleta refinada com base em Slate-50 a Slate-900: `--bg: #f8fafc`, `--card: #ffffff`, `--card-alt: #f1f5f9`, `--ink: #0f172a`, `--muted: #64748b`.
+  - Acentuação moderna Rose-600 (`#e11d48`) e Blue-600 (`#2563eb`).
+  - Dark mode harmonizado com tons profundos Slate-950 (`#030712`) e Navy Slate (`#0f172a`).
+- **Navegação em abas segmentadas (Segmented Control):**
+  - Redesenho da barra de abas em trilha neutra encapsulada (`background: var(--card-alt)`), com pílula ativa destacada em branco com sombra sutil (`box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06)`).
+
+### Verificado
+
+- Suíte completa de 27/27 testes automatizados aprovados em `scripts/test-app.js`.
+- Verificação visual via navegador confirmando ausência de uppercase e renderização harmônica dos novos cartões estatísticos.
+- Sintaxe validada via `node --check`.
+
 ## [0.0.19] - 2026-10-28
 
 ### Melhorado

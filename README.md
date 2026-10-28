@@ -6,7 +6,7 @@ Painel independente, estático e offline para consultar abstenção por seção 
 
 **Escopo:** Ji-Paraná e Presidente Médici, conforme a zona eleitoral
 
-**Versão:** 0.0.19
+**Versão:** 0.0.20
 
 **Documentação revisada em:** 28/10/2026
 

@@ -4,6 +4,7 @@ Documentação local do Painel Eleitoral das 3ª e 30ª Zonas Eleitorais de Rond
 
 ## Guias
 
+- [Checkpoint 0.0.20](checkpoint-0.0.20.md): modernização dos cards estatísticos autônomos, eliminação de upper case e paleta Slate contemporânea.
 - [Checkpoint 0.0.19](checkpoint-0.0.19.md): hierarquia tipográfica harmoniosa e moderna (padrão Linear / Apple / Vercel) e física tátil.
 - [Checkpoint 0.0.18](checkpoint-0.0.18.md): botão X no modal, fontes oficiais na home, título limpo e compactação da primeira dobra.
 - [Checkpoint 0.0.17](checkpoint-0.0.17.md): harmonia visual, cabeçalho com badges, métricas semibold e botões com ícones SVG.
