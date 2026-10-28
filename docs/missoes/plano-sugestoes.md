@@ -80,7 +80,7 @@ Este documento inventaria e estrutura a execução de todas as melhorias e pend�
 * **Tarefa 3.3: Consolidação Git e Documentação da Missão (Prompt 19)**
   * *Critério de Aceitação:* Atualizar `docs/missoes/plano-sugestoes.md` com status de cada sugestão, registrar commit e push com Conventional Commits sem bump de versão.
   * *Prompt:* Prompt 19 (`19-session-checkpoint.md`).
-  * *Status:* Pronto para execução.
+  * *Status:* Concluído.
 
 ---
 

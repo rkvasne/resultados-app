@@ -108,9 +108,9 @@ function formatSummaryText(rows) {
   if (!rows || !rows.length) return '';
   const summary = totals(rows);
   const weightedRate = pct(summary.abs, summary.apt);
-  const turn = $('turn').value;
+  const turn = $('turn')?.value || '2';
   const date = turn === '2' ? '25/10/2026' : '04/10/2026';
-  const cargo = turn === '2' ? 'Presidente' : $('office').value;
+  const cargo = turn === '2' ? 'Presidente' : ($('office')?.value || 'Presidente');
   const sectionNumbers = rows.map(r => `${r.z}ª ZE/${r.sec}`).join(', ');
   return [
     `Resultados — Eleições 2026 (${date})`,
@@ -128,23 +128,29 @@ async function copySummaryToClipboard(rows) {
   if (!rows || !rows.length) return;
   const text = formatSummaryText(rows);
   let success = false;
-  try {
-    if (navigator.clipboard && navigator.clipboard.writeText) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    try {
       await navigator.clipboard.writeText(text);
       success = true;
-    } else {
+    } catch (_) {
+      success = false;
+    }
+  }
+  if (!success) {
+    try {
       const ta = document.createElement('textarea');
       ta.value = text;
       ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
       ta.style.opacity = '0';
       document.body.appendChild(ta);
       ta.focus();
       ta.select();
       success = document.execCommand('copy');
       document.body.removeChild(ta);
+    } catch (_) {
+      success = false;
     }
-  } catch (_) {
-    success = false;
   }
   hapticFeedback();
   showToast(success ? 'Resumo copiado para a área de transferência!' : 'Não foi possível copiar o resumo.');

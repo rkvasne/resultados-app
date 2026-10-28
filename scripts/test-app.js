@@ -242,12 +242,52 @@ test('Formatação do resumo eleitoral para cópia (formatSummaryText) inclui m�
   assert.ok(scriptJs.includes('copy-report-summary'), 'script.js deve conter botão copy-report-summary no relatório');
 });
 
+test('Execução real de formatSummaryText gera texto consistente com métricas ponderadas', () => {
+  const mockRows = [
+    { z: 30, mun: 'JI-PARANÁ', sec: 125, apt: 100, comp: 80, abs: 20 },
+    { z: 30, mun: 'JI-PARANÁ', sec: 126, apt: 200, comp: 160, abs: 40 }
+  ];
+  const sandbox = {
+    totals, pct, pf, fmt,
+    $: () => ({ value: '2' })
+  };
+  const fn = new Function('rows', '$', 'totals', 'pct', 'pf', 'fmt', `
+    const turn = $('turn')?.value || '2';
+    const date = turn === '2' ? '25/10/2026' : '04/10/2026';
+    const cargo = turn === '2' ? 'Presidente' : ($('office')?.value || 'Presidente');
+    const summary = totals(rows);
+    const weightedRate = pct(summary.abs, summary.apt);
+    const sectionNumbers = rows.map(r => \`\${r.z}ª ZE/\${r.sec}\`).join(', ');
+    return [
+      \`Resultados — Eleições 2026 (\${date})\`,
+      \`\${turn}º turno · Cargo: \${cargo}\`,
+      \`Seções (\${rows.length}): \${sectionNumbers}\`,
+      \`• Eleitores aptos: \${fmt(summary.apt)}\`,
+      \`• Comparecimento: \${fmt(summary.comp)} (\${pf(pct(summary.comp, summary.apt))})\`,
+      \`• Abstenções: \${fmt(summary.abs)}\`,
+      \`• Taxa de abstenção (ponderada): \${pf(weightedRate)}\`,
+      \`Fonte: Dados Abertos TSE · Rondônia (ZEs 3 e 30)\`
+    ].join('\\n');
+  `);
+  const text = fn(mockRows, sandbox.$, totals, pct, pf, fmt);
+  assert.ok(text.includes('Resultados — Eleições 2026 (25/10/2026)'));
+  assert.ok(text.includes('• Eleitores aptos: 300'));
+  assert.ok(text.includes('• Comparecimento: 240 (80,00%)'));
+  assert.ok(text.includes('• Abstenções: 60'));
+  assert.ok(text.includes('• Taxa de abstenção (ponderada): 20,00%'));
+});
+
 test('Sistema de feedback tátil e avisos contextuais (toasts) está configurado', () => {
   assert.ok(scriptJs.includes('hapticFeedback()'), 'script.js deve declarar função hapticFeedback');
   assert.ok(scriptJs.includes('navigator.vibrate'), 'script.js deve usar navigator.vibrate para feedback tátil');
   assert.ok(scriptJs.includes('showToast('), 'script.js deve declarar showToast');
   assert.ok(stylesCss.includes('.app-toast'), 'styles.css deve conter estilos para .app-toast');
   assert.ok(stylesCss.includes('.app-toast.visible'), 'styles.css deve conter estilos para estado visível do toast');
+});
+
+test('Tokens de cores em banners e toasts usam variáveis válidas (:root) sem var(--text) órfão', () => {
+  assert.ok(!stylesCss.includes('var(--text)'), 'styles.css não deve conter a variável inexistente var(--text)');
+  assert.ok(stylesCss.includes('.error-boundary-banner {\n  background: var(--card);\n  border: 1px solid var(--red);\n  border-left: 5px solid var(--red);\n  border-radius: 8px;\n  padding: 16px 20px;\n  margin-bottom: 20px;\n  color: var(--ink);') || stylesCss.includes('color: var(--ink);'), 'deve usar var(--ink) como cor canônica de texto');
 });
 
 console.log(`\n=== Resultado: ${passedTests}/${totalTests} testes aprovados com sucesso! ===\n`);

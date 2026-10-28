@@ -4,6 +4,7 @@ Documentação local do Painel Eleitoral das 3ª e 30ª Zonas Eleitorais de Rond
 
 ## Guias
 
+- [Checkpoint 0.0.16](checkpoint-0.0.16.md): persistência em localStorage, cópia para clipboard, toasts, haptic feedback e error boundary.
 - [Checkpoint 0.0.15](checkpoint-0.0.15.md): Dark Mode nativo, acessibilidade WAI-ARIA com navegação por teclado, debounce e suíte de testes automatizados.
 - [Checkpoint 0.0.14](checkpoint-0.0.14.md): controles de seleção nativos e consistência visual entre as visões do painel.
 - [Checkpoint 0.0.13](checkpoint-0.0.13.md): escala tipográfica e validação visual do painel e relatório.

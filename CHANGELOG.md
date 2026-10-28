@@ -2,6 +2,28 @@
 
 Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/). A primeira versão publicada é `0.0.1`.
 
+## [0.0.16] - 2026-10-28
+
+### Adicionado
+
+- Proteção contra perda de dados com persistência automática de seleções de seções em `localStorage` particionada por turno (`resultados_app_selected_t1` e `t2`).
+- Botão "Copiar resumo" na barra de seleção e no diálogo de relatório para cópia imediata formatada via Clipboard API com fallback robusto via `document.execCommand`.
+- Sistema de feedback tátil (`navigator.vibrate`) e avisos contextuais flutuantes (*toasts*) com `role="status"` e `aria-live="polite"` calibrados para temas claro e escuro.
+- Tratamento de erro (*Error Boundary*) visual explicativo com banner informativo (`showErrorBanner`) e proteção `try/catch` no bootstrap de dados da aplicação.
+- Expansão da suíte de testes automatizados para 20 testes em `scripts/test-app.js` cobrindo persistência, cópia para área de transferência, integridade de tokens CSS e resiliência de carga.
+
+### Melhorado
+
+- Correção dos tokens semânticos em `.error-boundary-banner` e `.app-toast` para `var(--ink)`.
+- Encadeamento seguro em `formatSummaryText` para prevenir falhas em chamadas antecipadas.
+- Alinhamento da documentação técnica de arquitetura em `docs/architecture.md`, `README.md` e `docs/README.md`.
+
+### Verificado
+
+- 20/20 testes automatizados aprovados em `scripts/test-app.js`.
+- Sintaxe validada via `node --check` em todos os scripts JavaScript (`script.js`, `presidente_2026.js`, `presidente_2026_2t.js`, `scripts/test-app.js`, `scripts/import-president.js`, `scripts/import-president-2t.js`).
+- `git diff --check` sem erros de formatação ou caracteres indesejados.
+
 ## [0.0.15] - 2026-10-28
 
 ### Adicionado
