@@ -1,12 +1,44 @@
-const DATA = JSON.parse(document.getElementById('data').textContent);
-const PRESIDENT_DATA = window.PRESIDENT_DATA;
-const PRESIDENT_DATA_2T = window.PRESIDENT_DATA_2T;
 const $ = id => document.getElementById(id);
-const firstTurnNote = document.querySelector('.note').innerHTML;
+const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+
+function showErrorBanner(message, details) {
+  const container = document.querySelector('main.wrap') || document.body;
+  const banner = document.createElement('div');
+  banner.className = 'error-boundary-banner';
+  banner.setAttribute('role', 'alert');
+  banner.innerHTML = `
+    <div class="error-banner-content">
+      <h2>Não foi possível carregar os dados do painel</h2>
+      <p>${escapeHtml(message)}</p>
+      ${details ? `<pre class="error-banner-details">${escapeHtml(details)}</pre>` : ''}
+      <p class="error-banner-help">Certifique-se de que os arquivos <code>index.html</code>, <code>styles.css</code>, <code>presidente_2026.js</code> e <code>presidente_2026_2t.js</code> estão na mesma pasta e recarregue a página.</p>
+    </div>
+  `;
+  container.prepend(banner);
+}
+
+let DATA = null;
+let PRESIDENT_DATA = null;
+let PRESIDENT_DATA_2T = null;
+
+try {
+  const dataEl = document.getElementById('data');
+  if (!dataEl) throw new Error('Elemento de dados incorporados (#data) não encontrado no HTML.');
+  DATA = JSON.parse(dataEl.textContent);
+  PRESIDENT_DATA = window.PRESIDENT_DATA;
+  PRESIDENT_DATA_2T = window.PRESIDENT_DATA_2T;
+  if (!PRESIDENT_DATA || !PRESIDENT_DATA_2T) {
+    throw new Error('Arquivos de dados presidenciais (presidente_2026.js ou presidente_2026_2t.js) não foram carregados.');
+  }
+} catch (err) {
+  console.error('Erro de inicialização do painel:', err);
+  showErrorBanner(err.message);
+}
+
+const firstTurnNote = document.querySelector('.note')?.innerHTML || '';
 const fmt = n => new Intl.NumberFormat('pt-BR').format(n || 0);
 const pct = (a, b) => b ? 100 * a / b : 0;
 const pf = n => n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%';
-const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
 let tab = 'sections';
 let page = 0;
 let sortKey = '';
@@ -16,6 +48,107 @@ let searchDebounceTimer;
 let rowsCurrent = [];
 let colCurrent = [];
 const selectedSections = new Set();
+
+function hapticFeedback() {
+  try {
+    if (navigator.vibrate) navigator.vibrate(12);
+  } catch (_) {}
+}
+
+let toastTimer;
+function showToast(message) {
+  let toast = document.getElementById('app-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'app-toast';
+    toast.className = 'app-toast';
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+  toast.classList.add('visible');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    toast.classList.remove('visible');
+  }, 2800);
+}
+
+function storageKeyForTurn() {
+  const turn = document.getElementById('turn')?.value || '2';
+  return `resultados_app_selected_t${turn}`;
+}
+
+function loadPersistedSelections() {
+  try {
+    const raw = localStorage.getItem(storageKeyForTurn());
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        selectedSections.clear();
+        for (const k of parsed) selectedSections.add(k);
+      }
+    }
+  } catch (_) {}
+}
+
+function persistSelections() {
+  try {
+    localStorage.setItem(storageKeyForTurn(), JSON.stringify([...selectedSections]));
+  } catch (_) {}
+}
+
+function clearPersistedSelections() {
+  try {
+    localStorage.removeItem(storageKeyForTurn());
+  } catch (_) {}
+}
+
+function formatSummaryText(rows) {
+  if (!rows || !rows.length) return '';
+  const summary = totals(rows);
+  const weightedRate = pct(summary.abs, summary.apt);
+  const turn = $('turn').value;
+  const date = turn === '2' ? '25/10/2026' : '04/10/2026';
+  const cargo = turn === '2' ? 'Presidente' : $('office').value;
+  const sectionNumbers = rows.map(r => `${r.z}ª ZE/${r.sec}`).join(', ');
+  return [
+    `Resultados — Eleições 2026 (${date})`,
+    `${turn}º turno · Cargo: ${cargo}`,
+    `Seções (${rows.length}): ${sectionNumbers}`,
+    `• Eleitores aptos: ${fmt(summary.apt)}`,
+    `• Comparecimento: ${fmt(summary.comp)} (${pf(pct(summary.comp, summary.apt))})`,
+    `• Abstenções: ${fmt(summary.abs)}`,
+    `• Taxa de abstenção (ponderada): ${pf(weightedRate)}`,
+    `Fonte: Dados Abertos TSE · Rondônia (ZEs 3 e 30)`
+  ].join('\n');
+}
+
+async function copySummaryToClipboard(rows) {
+  if (!rows || !rows.length) return;
+  const text = formatSummaryText(rows);
+  let success = false;
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text);
+      success = true;
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      success = document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+  } catch (_) {
+    success = false;
+  }
+  hapticFeedback();
+  showToast(success ? 'Resumo copiado para a área de transferência!' : 'Não foi possível copiar o resumo.');
+}
 
 const officeOrder = ['Presidente', 'Governador', 'Senador', 'Deputado Federal', 'Deputado Estadual'];
 
@@ -43,9 +176,10 @@ function addReportDialog() {
   const dialog = document.createElement('dialog');
   dialog.id = 'report-dialog';
   dialog.setAttribute('aria-labelledby', 'report-title');
-  dialog.innerHTML = '<div class="report-dialog-actions"><button class="btn" type="button" id="close-report">Voltar ao painel</button><button class="btn report-print" type="button" id="print-report">Imprimir / salvar PDF</button></div><article id="report-preview" class="report-preview"></article>';
+  dialog.innerHTML = '<div class="report-dialog-actions"><button class="btn" type="button" id="close-report">Voltar ao painel</button><button class="btn" type="button" id="copy-report-summary">Copiar resumo</button><button class="btn report-print" type="button" id="print-report">Imprimir / salvar PDF</button></div><article id="report-preview" class="report-preview"></article>';
   document.body.append(dialog);
   $('close-report').addEventListener('click', () => dialog.close());
+  $('copy-report-summary').addEventListener('click', () => copySummaryToClipboard(reportRows()));
   $('print-report').addEventListener('click', () => window.print());
   dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
 }
@@ -111,6 +245,8 @@ function updateSelectionControls() {
   if (countLabel) countLabel.textContent = `${fmt(count)} ${count === 1 ? 'seção selecionada' : 'seções selecionadas'}`;
   const reportButton = document.querySelector('#preview-report');
   if (reportButton) reportButton.disabled = count === 0;
+  const copyButton = document.querySelector('#copy-selection-summary');
+  if (copyButton) copyButton.disabled = count === 0;
   const clearButton = document.querySelector('#clear-selection');
   if (clearButton) clearButton.disabled = count === 0;
   const pageRows = rowsCurrent.slice(page * 50, (page + 1) * 50);
@@ -361,7 +497,7 @@ function show() {
   const titles = { sections: 'Abstenção e votos por seção', places: 'Consolidado por local de votação', comparison: 'Comparativo eleitoral', candidates: 'Votação nominal por candidato', parties: 'Votação por partido' };
   const emptyMessage = '<div class="empty-state"><p class="empty-text">Nenhum resultado corresponde aos filtros ou à busca.</p><button class="btn btn-empty-reset" type="button">Limpar busca e filtros</button></div>';
   const mobileCards = pageRows.map(row => renderMobileCard(row, data, selectable)).join('');
-  $('tabcontent').innerHTML = `<section class="panel"><h2>${titles[tab]}</h2><p class="hint">${data.description}</p>${selectable ? `<div class="selection-toolbar"><div><strong id="selection-count"></strong><span> A seleção é mantida ao alterar os filtros.</span></div><div class="tools"><button class="btn" id="toggle-page-selection">Selecionar página</button><button class="btn" id="preview-report" ${selectedSections.size ? '' : 'disabled'}>Prévia do relatório</button><button class="btn" id="clear-selection" ${selectedSections.size ? '' : 'disabled'}>Limpar seleção</button></div></div>` : ''}<div class="toolbar"><div class="result-count"><b>${fmt(rows.length)}</b> registros encontrados</div><div class="tools"><input class="search" id="q" value="${escapeHtml(search)}" placeholder="Buscar nome, seção, município..." aria-label="Buscar na tabela"><button class="btn" id="download">Exportar CSV filtrado</button><button class="btn" id="reset" ${search ? '' : 'disabled'}>Limpar busca</button></div></div><div class="mobile-sort"><label for="mobile-sort">Ordenar por</label><select id="mobile-sort">${data.columns.map(([key, label]) => `<option value="${escapeHtml(key)}" ${sortKey === key ? 'selected' : ''}>${escapeHtml(label)}</option>`).join('')}</select><button class="btn" type="button" id="mobile-sort-direction" aria-label="Alternar para ordem ${sortDir === 1 ? 'decrescente' : 'crescente'}">${sortDir === 1 ? 'Crescente ↑' : 'Decrescente ↓'}</button></div><div class="mobile-results" role="list" aria-label="Resultados da consulta">${mobileCards || `<div class="mobile-empty">${emptyMessage}</div>`}</div><div class="table-wrap"><table><thead><tr>${selectable ? '<th class="selection-cell">Selecionar</th>' : ''}${data.columns.map(([key, label]) => {
+  $('tabcontent').innerHTML = `<section class="panel"><h2>${titles[tab]}</h2><p class="hint">${data.description}</p>${selectable ? `<div class="selection-toolbar"><div><strong id="selection-count"></strong><span> A seleção é mantida ao alterar os filtros.</span></div><div class="tools"><button class="btn" id="toggle-page-selection">Selecionar página</button><button class="btn" id="preview-report" ${selectedSections.size ? '' : 'disabled'}>Prévia do relatório</button><button class="btn" id="copy-selection-summary" ${selectedSections.size ? '' : 'disabled'}>Copiar resumo</button><button class="btn" id="clear-selection" ${selectedSections.size ? '' : 'disabled'}>Limpar seleção</button></div></div>` : ''}<div class="toolbar"><div class="result-count"><b>${fmt(rows.length)}</b> registros encontrados</div><div class="tools"><input class="search" id="q" value="${escapeHtml(search)}" placeholder="Buscar nome, seção, município..." aria-label="Buscar na tabela"><button class="btn" id="download">Exportar CSV filtrado</button><button class="btn" id="reset" ${search ? '' : 'disabled'}>Limpar busca</button></div></div><div class="mobile-sort"><label for="mobile-sort">Ordenar por</label><select id="mobile-sort">${data.columns.map(([key, label]) => `<option value="${escapeHtml(key)}" ${sortKey === key ? 'selected' : ''}>${escapeHtml(label)}</option>`).join('')}</select><button class="btn" type="button" id="mobile-sort-direction" aria-label="Alternar para ordem ${sortDir === 1 ? 'decrescente' : 'crescente'}">${sortDir === 1 ? 'Crescente ↑' : 'Decrescente ↓'}</button></div><div class="mobile-results" role="list" aria-label="Resultados da consulta">${mobileCards || `<div class="mobile-empty">${emptyMessage}</div>`}</div><div class="table-wrap"><table><thead><tr>${selectable ? '<th class="selection-cell">Selecionar</th>' : ''}${data.columns.map(([key, label]) => {
     const isSorted = sortKey === key;
     const direction = sortDir === 1 ? 'ascending' : 'descending';
     const indicator = isSorted ? (sortDir === 1 ? '↑' : '↓') : '';
@@ -375,10 +511,20 @@ function show() {
         if (allSelected) selectedSections.delete(sectionKey(row));
         else selectedSections.add(sectionKey(row));
       }
+      persistSelections();
+      hapticFeedback();
       show();
     };
     $('preview-report').onclick = showReport;
-    $('clear-selection').onclick = () => { selectedSections.clear(); show(); };
+    const copyBtn = $('copy-selection-summary');
+    if (copyBtn) copyBtn.onclick = () => copySummaryToClipboard(reportRows());
+    $('clear-selection').onclick = () => {
+      selectedSections.clear();
+      clearPersistedSelections();
+      hapticFeedback();
+      showToast('Seleção de seções limpa.');
+      show();
+    };
   }
   $('q').addEventListener('input', event => {
     const val = event.target.value;
@@ -458,6 +604,8 @@ function updateTurn() {
 }
 
 function download() {
+  hapticFeedback();
+  showToast('Exportando CSV filtrado...');
   const encode = value => '"' + String(value ?? '').replace(/"/g, '""') + '"';
   const output = [colCurrent.map(column => encode(column[1])).join(';'), ...rowsCurrent.map(row => colCurrent.map(([key]) => encode(key === 'rate' ? pf(row[key]) : row[key])).join(';'))].join('\r\n');
   const blob = new Blob(['\ufeff' + output], { type: 'text/csv;charset=utf-8;' });
@@ -476,6 +624,8 @@ document.addEventListener('change', event => {
     const key = event.target.dataset.sectionKey;
     if (event.target.checked) selectedSections.add(key);
     else selectedSections.delete(key);
+    persistSelections();
+    hapticFeedback();
     updateSelectionControls();
     return;
   }
@@ -487,6 +637,7 @@ document.addEventListener('change', event => {
   sortDir = -1;
   selectedSections.clear();
   updateTurn();
+  loadPersistedSelections();
   show();
 });
 document.querySelectorAll('.tab').forEach(element => element.onclick = () => {
@@ -516,11 +667,15 @@ if (tabList) {
     }
   });
 }
-addTurnFilter();
-addReportDialog();
-orderOfficeOptions();
-updatePlaces();
-document.querySelector('label[for="office"]').textContent = 'Votos exibidos';
-updateTurn();
-updateOfficeGuidance();
-show();
+
+if (DATA && PRESIDENT_DATA && PRESIDENT_DATA_2T) {
+  addTurnFilter();
+  addReportDialog();
+  orderOfficeOptions();
+  updatePlaces();
+  document.querySelector('label[for="office"]').textContent = 'Votos exibidos';
+  updateTurn();
+  loadPersistedSelections();
+  updateOfficeGuidance();
+  show();
+}

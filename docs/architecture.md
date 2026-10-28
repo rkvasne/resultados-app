@@ -16,6 +16,7 @@ O projeto é uma página estática, sem etapa de build ou servidor de aplicaçã
 | `script.js` | Filtros, métricas, tabelas, ordenação, paginação e exportação CSV. |
 | `scripts/import-president.js` | Extrator em fluxo do CSV nacional do TSE e validador do recorte presidencial. |
 | `scripts/import-president-2t.js` | Extrator e validador do recorte presidencial do 2º turno. |
+| `scripts/test-app.js` | Suíte de testes automatizados em Node, validando integridade, dados, cálculos, WAI-ARIA, theming e debounce. |
 | `VERSION` | Versão corrente do painel, em SemVer. |
 | `.vercelignore` | Limita o deploy aos arquivos estáticos necessários e exclui os CSVs brutos locais. |
 
@@ -41,8 +42,8 @@ Os dados locais são lidos em memória durante a execução da página. O painel
 
 Os CSVs de origem não são atualizados automaticamente. Para atualizar os cargos estaduais, substitua o JSON incorporado ao HTML; para Presidente, gere os recortes com `node scripts/import-president.js --write` e `node scripts/import-president-2t.js --write`. Consulte [Fontes e tratamento dos dados](data-sources.md).
 
-## Verificação manual
+## Verificação e Testes
 
 Após atualizar o HTML, mantenha os arquivos CSS e JavaScript ao lado dele e abra-o em um navegador. Confira filtros geográficos, orientação contextual do cargo (incluindo Presidente), indicadores de abstenção, busca, ordenação com mouse, teclado e controle móvel, estado aria-sort, seleção de seções, cartões móveis, paginação e exportação. Em celular, confirme que a página não cria rolagem horizontal e que os cartões mantêm seleção e dados adicionais. Compare os totais com os consolidados oficiais antes de distribuir os arquivos.
 
-O repositório não contém `package.json`, runner de testes ou suíte automatizada; por isso `npm run verify:full` não está definido. Os checks disponíveis incluem `node --check` nos scripts, prévias validadas dos dois importadores, `git diff --check`, comparação dos totais e conferência funcional no navegador.
+O repositório opera de forma independente e autônoma, sem dependência de `package.json` ou gerenciadores externos. A verificação automatizada é executada nativamente em Node por meio de `node scripts/test-app.js` (cobrindo integridade de arquivos, dados eleitorais, cálculos ponderados, escopo geográfico, WAI-ARIA, theming e debounce), complementada por `node --check` nos scripts, prévias validadas dos importadores e `git diff --check`.

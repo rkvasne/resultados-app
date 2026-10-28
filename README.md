@@ -38,6 +38,10 @@ Não é necessário instalar dependências, configurar servidor, criar `.env.loc
 - Ordenação móvel por campo e direção, com dados adicionais expansíveis nos cartões.
 - Hierarquia tipográfica unificada com fontes do sistema, sem dependências externas, para leitura consistente também offline.
 - Caixas de seleção nativas de 16 px, com área de toque acessível no celular e realce da seção selecionada.
+- Suporte nativo ao Modo Escuro (`prefers-color-scheme: dark`) e sensibilidade a movimento (`prefers-reduced-motion: reduce`).
+- Navegação fluida por teclado nas abas por setas direcionais (WAI-ARIA Tabs pattern) e anel de foco de alto contraste.
+- Estado vazio (*empty state*) interativo com botão direto para "Limpar busca e filtros".
+- Busca otimizada com debounce inteligente de 180 ms na digitação.
 
 O seletor **Turno** abre no 2º turno e permite consultar as duas apurações. No 1º turno, **Votos exibidos** lista os cargos do maior para o menor: Presidente, Governador, Senador, Deputado Federal e Deputado Estadual. Ao escolher Presidente, os votos e indicadores usam o detalhamento presidencial do TSE/SISTOT; para os demais cargos, usam o detalhamento estadual. No 2º turno, Presidente é o único cargo disponível e seus votos, aptos, comparecimento e abstenções vêm das respectivas fontes de 25/10. Para Presidente, estão disponíveis as visões por seção, comparação e candidatos; a visão por partido não se aplica porque o recorte por seção não traz essa classificação. A ordenação das tabelas pode ser acionada por teclado.
 
@@ -67,6 +71,7 @@ Os CSVs de origem ficam sob `docs/` e não são carregados pelo painel. Para atu
 ├── script.js                              # Filtros, tabelas e exportação
 ├── scripts/import-president.js            # Extrator em fluxo do CSV nacional do TSE
 ├── scripts/import-president-2t.js         # Votos e comparecimento presidenciais do 2º turno
+├── scripts/test-app.js                    # Suíte de testes automatizados em Node
 ├── historico_conversa_abstencao_eleicoes_2026.md
 ├── docs/                                  # Documentação e fontes TSE ignoradas pelo Git
 │   ├── detalhe_votacao_secao_2026/

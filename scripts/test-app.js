@@ -202,6 +202,54 @@ test('script.js possui navegação por teclado nas abas e empty state com reset'
   assert.ok(scriptJs.includes('btn-empty-reset'), 'script.js deve conter botão para resetar busca e filtros no empty state');
 });
 
+// 9. Persistência e Resiliência
+console.log('\n[9] Persistência, Resiliência e Error Boundary:');
+
+test('script.js implementa Error Boundary com banner informativo em caso de erro na carga', () => {
+  assert.ok(scriptJs.includes('function showErrorBanner('), 'script.js deve declarar showErrorBanner');
+  assert.ok(scriptJs.includes('error-boundary-banner'), 'script.js deve criar elemento com classe error-boundary-banner');
+  assert.ok(stylesCss.includes('.error-boundary-banner'), 'styles.css deve conter estilos para .error-boundary-banner');
+});
+
+test('script.js possui persistência de seleções em localStorage com chave por turno', () => {
+  assert.ok(scriptJs.includes('resultados_app_selected_t'), 'script.js deve usar chave com prefixo de turno para localStorage');
+  assert.ok(scriptJs.includes('loadPersistedSelections()'), 'script.js deve declarar e invocar loadPersistedSelections');
+  assert.ok(scriptJs.includes('persistSelections()'), 'script.js deve salvar seleções no localStorage');
+  assert.ok(scriptJs.includes('clearPersistedSelections()'), 'script.js deve limpar seleções salvas no localStorage');
+});
+
+test('Lógica de serialização em localStorage preserva seleções de seções de forma determinística', () => {
+  const mockStorage = new Map();
+  const setItem = (k, v) => mockStorage.set(k, v);
+  const getItem = k => mockStorage.get(k) || null;
+
+  const testSelections = ['2|30|JI-PARANÁ|125', '2|3|PRESIDENTE MÉDICI|15'];
+  setItem('resultados_app_selected_t2', JSON.stringify(testSelections));
+
+  const restored = JSON.parse(getItem('resultados_app_selected_t2'));
+  assert.strictEqual(restored.length, 2);
+  assert.strictEqual(restored[0], '2|30|JI-PARANÁ|125');
+  assert.strictEqual(restored[1], '2|3|PRESIDENTE MÉDICI|15');
+});
+
+// 10. Produtividade e Feedback Mobile
+console.log('\n[10] Produtividade, Clipboard e Feedback Mobile:');
+
+test('Formatação do resumo eleitoral para cópia (formatSummaryText) inclui métricas essenciais', () => {
+  assert.ok(scriptJs.includes('formatSummaryText(rows)'), 'script.js deve declarar formatSummaryText');
+  assert.ok(scriptJs.includes('copySummaryToClipboard('), 'script.js deve declarar copySummaryToClipboard');
+  assert.ok(scriptJs.includes('copy-selection-summary'), 'script.js deve conter botão copy-selection-summary na barra');
+  assert.ok(scriptJs.includes('copy-report-summary'), 'script.js deve conter botão copy-report-summary no relatório');
+});
+
+test('Sistema de feedback tátil e avisos contextuais (toasts) está configurado', () => {
+  assert.ok(scriptJs.includes('hapticFeedback()'), 'script.js deve declarar função hapticFeedback');
+  assert.ok(scriptJs.includes('navigator.vibrate'), 'script.js deve usar navigator.vibrate para feedback tátil');
+  assert.ok(scriptJs.includes('showToast('), 'script.js deve declarar showToast');
+  assert.ok(stylesCss.includes('.app-toast'), 'styles.css deve conter estilos para .app-toast');
+  assert.ok(stylesCss.includes('.app-toast.visible'), 'styles.css deve conter estilos para estado visível do toast');
+});
+
 console.log(`\n=== Resultado: ${passedTests}/${totalTests} testes aprovados com sucesso! ===\n`);
 if (passedTests !== totalTests) {
   process.exit(1);

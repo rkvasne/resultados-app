@@ -463,6 +463,83 @@ button:disabled {
   opacity: .9;
 }
 
+/* Banner de erro na carga de dados (Error Boundary) */
+.error-boundary-banner {
+  background: var(--card);
+  border: 1px solid var(--red);
+  border-left: 5px solid var(--red);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  color: var(--text);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.error-boundary-banner h2 {
+  color: var(--red);
+  font-size: 16px;
+  margin: 0 0 8px 0;
+}
+
+.error-boundary-banner p {
+  margin: 4px 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.error-banner-details {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  margin: 8px 0;
+  overflow-x: auto;
+  font-family: monospace;
+}
+
+.error-banner-help {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+/* Toast de feedback contextual */
+.app-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--blue);
+  border-left: 4px solid var(--blue);
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  transform: translateY(16px);
+  pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease;
+}
+
+.app-toast.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+@media (max-width: 570px) {
+  .app-toast {
+    right: 16px;
+    left: 16px;
+    bottom: 16px;
+    text-align: center;
+  }
+}
+
 @media (max-width: 900px) {
   .filters {
     grid-template-columns: repeat(2, 1fr);
