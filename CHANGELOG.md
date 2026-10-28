@@ -2,6 +2,27 @@
 
 Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/). A primeira versão publicada é `0.0.1`.
 
+## [0.0.19] - 2026-10-28
+
+### Melhorado
+
+- **Hierarquia tipográfica harmoniosa e moderna (padrão Linear / Apple / Vercel):**
+  - Eliminação de fontes infladas herdadas de folhas de estilo anteriores em `responsive.css` e `styles.css`.
+  - Escala proporcional refinada: corpo base em `13px` com `line-height: 1.45`, antialiasing subpixel (`-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;`).
+  - Cabeçalho elegante: título principal em `17px` (`font-weight: 650; letter-spacing: -0.025em;`), subtítulo refinado em `12px` e chips/badges em `10.5px`.
+  - Cartões de métricas calibrados: números em `18px` semibold (`600`) com `letter-spacing: -0.025em` tabular, rótulos superiores em `10px` uppercase e subtextos em `10.5px`.
+  - Controles de formulário compactos: selects e inputs com altura de `34px`, fonte `12px` e cantos arredondados de `6px`.
+  - Abas e painéis: abas com `12px` e `padding: 5px 11px`, títulos de visão em `14px` e textos descritivos em `11.5px`.
+  - Tabela de dados de alta densidade: cabeçalhos `th` em `10.5px` uppercase, células `td` em `12px` com `padding: 6px 10px` e pills percentuais compactos.
+- **Física tátil e microinterações:**
+  - Adicionado micro-feedback tátil (`transform: scale(0.98)`) no clique ativo de botões e abas.
+  - Sincronização da escala compacta e elegante nos breakpoints mobile e tablet.
+
+### Verificado
+
+- 27/27 testes automatizados aprovados em `scripts/test-app.js`.
+- Sintaxe JavaScript verificada com sucesso via `node --check`.
+
 ## [0.0.18] - 2026-10-28
 
 ### Adicionado

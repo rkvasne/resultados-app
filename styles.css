@@ -78,7 +78,9 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font: 14px/1.5 system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+  font: 13px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 header, .app-header {
@@ -114,9 +116,9 @@ header, .app-header {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 3px 10px;
-  font-size: 11px;
-  font-weight: 600;
+  padding: 2.5px 8px;
+  font-size: 10.5px;
+  font-weight: 550;
   border-radius: 9999px;
   background: rgba(255, 255, 255, 0.1);
   color: #e2e8f0;
@@ -154,8 +156,8 @@ header, .app-header {
   background: var(--card-alt);
   border: 1px solid var(--line);
   color: var(--muted);
-  font-size: 12px;
-  padding: 4px 10px;
+  font-size: 11px;
+  padding: 2.5px 7px;
   font-weight: 500;
 }
 
@@ -163,8 +165,8 @@ header, .app-header {
   background: var(--cyan);
   border: 1px solid var(--blue);
   color: var(--blue-focus);
-  font-size: 12px;
-  padding: 4px 10px;
+  font-size: 11px;
+  padding: 2.5px 7px;
   font-weight: 600;
 }
 
@@ -173,24 +175,24 @@ header, .app-header {
 }
 
 header h1, .app-header h1 {
-  font-size: clamp(18px, 2vw, 22px);
-  font-weight: 700;
-  letter-spacing: -.03em;
-  line-height: 1.2;
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -.025em;
+  line-height: 1.25;
   margin: 0;
 }
 
 header p, .app-header p {
   color: var(--header-sub);
   margin: 0;
-  font-size: 13px;
-  line-height: 1.35;
+  font-size: 12px;
+  line-height: 1.4;
   max-width: 800px;
 }
 
 .eyebrow {
   color: #8fb7ff;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: .08em;
   text-transform: uppercase;
@@ -234,7 +236,7 @@ select, input {
   border-radius: 6px;
   padding: 0 9px;
   color: var(--ink);
-  font-size: 13px;
+  font-size: 12px;
   outline: none;
   transition: border-color .15s ease, box-shadow .15s ease;
 }
@@ -280,16 +282,16 @@ select:focus, input:focus {
 }
 
 .metric .value {
-  font-size: clamp(18px, 1.5vw, 22px);
+  font-size: 18px;
   font-weight: 600;
-  margin: 2px 0;
-  letter-spacing: -.02em;
+  margin: 1px 0;
+  letter-spacing: -.025em;
   font-variant-numeric: tabular-nums;
 }
 
 .metric .sub {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 10.5px;
   line-height: 1.3;
 }
 
@@ -308,12 +310,16 @@ select:focus, input:focus {
   border: 1px solid var(--line);
   background: var(--card);
   border-radius: 6px;
-  padding: 6px 12px;
+  padding: 5px 11px;
   cursor: pointer;
-  font-weight: 600;
-  font-size: 13px;
+  font-weight: 550;
+  font-size: 12px;
   color: var(--ink);
-  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease, transform .08s ease;
+}
+
+.tab:active {
+  transform: scale(0.98);
 }
 
 .tab:hover:not(.active) {
@@ -333,17 +339,17 @@ select:focus, input:focus {
 }
 
 .panel h2 {
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 650;
   letter-spacing: -.02em;
-  margin: 0 0 3px;
+  margin: 0 0 2px;
 }
 
 .hint {
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--muted);
   margin: 0 0 8px;
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
 .toolbar {
@@ -361,7 +367,7 @@ select:focus, input:focus {
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-  padding: 6px 12px;
+  padding: 5px 10px;
   margin-bottom: 8px;
   background: var(--card-alt);
   border: 1px solid var(--line);
@@ -376,7 +382,7 @@ select:focus, input:focus {
 }
 
 .selection-hint {
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--muted);
 }
 
@@ -391,15 +397,15 @@ select:focus, input:focus {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
+  gap: 6px;
   background: var(--btn-bg);
   color: var(--btn-text);
   border: 1px solid var(--btn-border);
-  border-radius: 8px;
-  padding: 8px 13px;
+  border-radius: 6px;
+  padding: 6px 11px;
   cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 550;
   line-height: 1.25;
   transition: background-color .15s ease, border-color .15s ease, transform .08s ease;
   white-space: nowrap;
