@@ -12,6 +12,7 @@ Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelo
   - Persistência automática da preferência do usuário em `localStorage` sob a chave `'resultados_app_page_size'`, preservando a escolha entre recargas de página.
   - Centralização do fatiamento de dados através do helper unificado `currentPageRows()`, garantindo consistência estrita tanto na renderização das linhas quanto no comportamento de marcação em lote ("Selecionar página" / "Desmarcar").
   - Quando a opção "Todos" está ativa, a paginação desabilita os botões de navegação e consolida a visualização contínua com contador `Exibindo todos os X registros`.
+  - Redesign moderno e compacto padrão Linear/Vercel: seletor inline em pílula (`width: auto`, 64px) com chevron SVG discreto e disposição estritamente horizontal sem quebras de linha (`Exibir [ 50 ▾ ] por página · Página 1 de 9 · 409 registros`).
   - Adaptação responsiva para telas menores (mobile) em `responsive.css`, empilhando verticalmente controles e seletor com alinhamento limpo e botões táteis.
 
 ### Verificado

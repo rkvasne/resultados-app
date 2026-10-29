@@ -29,13 +29,13 @@ O objetivo foi proporcionar ao usuário autonomia para visualizar volumes maiore
   - Ao selecionar a opção "Todos", a barra exibe `Exibindo todos os X registros` e desabilita os botões de navegação "Anterior" e "Próxima".
 
 ### 2.2 Estilização e Design System (`styles.css` e `responsive.css`)
-- **Desktop:**
-  - Criada a classe `.page-size-wrap` com tipografia Slate refinada, alinhamento flexível e gap de 6px.
-  - Estilizado o `.page-size-select` com bordas sutis (`var(--input-border)`), foco nítido (`var(--blue-focus)`) e transição suave.
-  - Inserido separador visual `.page-divider` para distinguir o seletor de tamanho da informação de página corrente.
+- **Desktop (Padrão Linear / Vercel):**
+  - Contêiner `.page-controls` perfeitamente alinhado com margem superior e espaçamento de 16px.
+  - O seletor `.page-size-wrap` adota `inline-flex` estrito com `white-space: nowrap`, exibindo em linha única contínua: `Exibir [ 50 ▾ ] por página · Página 1 de 9 · 409 registros`.
+  - Estilizado o `.page-size-select` com visual de pílula compacta (`height: 28px`, `width: auto`, `min-width: 64px`), chevron SVG discreto embutido (`background-image`), sem bordas esticadas (`appearance: none`) e foco nítido Slate.
+  - Inserido separador visual `.page-divider` e contadores tabulares com peso semibold.
 - **Mobile (`responsive.css`):**
-  - Sob `@media (max-width: 760px)`, o contêiner `.page-controls` empilha-se verticalmente (`flex-direction: column`) com espaçamento de 10px.
-  - O seletor `.page-size-wrap` centraliza-se na tela com tipografia de 12.5px, e os botões de navegação expandem com largura total e área de toque acessível.
+  - Sob `@media (max-width: 760px)`, o contêiner `.page-controls` empilha-se verticalmente com centralização flexível de `.page-size-wrap`, e os botões de navegação expandem com largura total e área de toque acessível.
 
 ### 2.3 Suíte de Testes Automatizados (`scripts/test-app.js`)
 - Adicionada seção `[13] Paginação e Quantidade de Resultados por Página`:

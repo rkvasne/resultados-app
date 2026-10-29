@@ -602,51 +602,89 @@ td.col-local-cell {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  margin-top: 12px;
+  gap: 16px;
+  margin-top: 14px;
+  padding: 4px 2px 2px;
   color: var(--muted);
   font-size: 13px;
+  line-height: 1.4;
 }
 
 .page-size-wrap {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+  gap: 7px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
 
-.page-size-wrap label {
-  font-size: 13px;
-  color: var(--muted);
+.page-size-label {
+  display: inline !important;
+  margin: 0 !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  color: var(--muted) !important;
+  letter-spacing: normal !important;
 }
 
+select.page-size-select,
 .page-size-select {
-  padding: 3px 8px;
-  border: 1px solid var(--input-border);
+  display: inline-block;
+  width: auto !important;
+  min-width: 64px;
+  height: 28px !important;
+  line-height: 26px;
+  margin: 0;
+  padding: 0 24px 0 10px !important;
+  border: 1px solid var(--line-strong, #cbd5e1);
   border-radius: 6px;
-  background: var(--input-bg);
+  background-color: var(--card);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 7px center;
+  background-size: 11px 11px;
   color: var(--ink);
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 12.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
   cursor: pointer;
-  height: 30px;
   outline: none;
-  transition: border-color .15s ease, box-shadow .15s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
 }
 
+select.page-size-select:hover,
+.page-size-select:hover {
+  border-color: var(--blue);
+  background-color: var(--card-alt);
+}
+
+select.page-size-select:focus,
 .page-size-select:focus {
   border-color: var(--blue-focus);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+}
+
+.page-size-suffix {
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .page-divider {
-  color: var(--muted-light);
-  opacity: 0.6;
+  display: inline-block;
+  margin: 0 3px;
+  color: var(--line-strong, #cbd5e1);
+  font-weight: 600;
 }
 
 .page-info {
+  font-size: 13px;
   font-weight: 500;
-  color: var(--muted);
+  color: var(--ink-secondary, #475569);
+  font-variant-numeric: tabular-nums;
 }
 
 .note {
