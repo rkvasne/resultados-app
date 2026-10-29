@@ -2,6 +2,24 @@
 
 Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/). A primeira versão publicada é `0.0.1`.
 
+## [0.1.2] - 2026-10-29
+
+### Adicionado e Melhorado
+
+- **Redesign Moderno dos Controles de Paginação (Padrão Linear / Vercel):**
+  - Eliminação de quebra de linhas desproporcional na barra de paginação inferior (`.page-controls`).
+  - Disposição estritamente horizontal em linha única: `Exibir [ 50 ▾ ] por página · Página 1 de 9 · 409 registros`.
+  - Seletor em pílula compacta com largura contida (`width: auto !important`, 64px), altura padrão de 28px e chevron SVG sutil integrado via data URI.
+  - Alinhamento tipográfico neutro e refinado em Slate com números tabulares nos indicadores de página e total de registros.
+  - Sincronização mobile com empilhamento vertical e centralização equilibrada em telas estreitas.
+
+### Verificado
+
+- Suíte de 32/32 testes automatizados aprovada com sucesso (`scripts/test-app.js`).
+- Validação estrita de sintaxe JavaScript (`node --check`) sem erros ou avisos.
+- Verificação visual em navegador real confirmando ausência de quebras e harmonia de proporções.
+- Conformidade de código e formatação limpa validada via `git diff --check`.
+
 ## [0.1.1] - 2026-10-29
 
 ### Adicionado e Melhorado
