@@ -608,6 +608,47 @@ td.col-local-cell {
   font-size: 13px;
 }
 
+.page-size-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.page-size-wrap label {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.page-size-select {
+  padding: 3px 8px;
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  background: var(--input-bg);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  height: 30px;
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.page-size-select:focus {
+  border-color: var(--blue-focus);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.page-divider {
+  color: var(--muted-light);
+  opacity: 0.6;
+}
+
+.page-info {
+  font-weight: 500;
+  color: var(--muted);
+}
+
 .note {
   padding: 14px 18px;
   margin: 15px 0;

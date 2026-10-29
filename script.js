@@ -41,6 +41,7 @@ const pct = (a, b) => b ? 100 * a / b : 0;
 const pf = n => n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%';
 let tab = 'sections';
 let page = 0;
+let pageSize = 50;
 let sortKey = '';
 let sortDir = -1;
 let search = '';
@@ -101,6 +102,20 @@ function persistSelections() {
 function clearPersistedSelections() {
   try {
     localStorage.removeItem(storageKeyForTurn());
+  } catch (_) {}
+}
+
+function loadPersistedPageSize() {
+  try {
+    const saved = localStorage.getItem('resultados_app_page_size');
+    if (saved === 'all') pageSize = 'all';
+    else if (saved && [25, 50, 100].includes(Number(saved))) pageSize = Number(saved);
+  } catch (_) {}
+}
+
+function persistPageSize() {
+  try {
+    localStorage.setItem('resultados_app_page_size', String(pageSize));
   } catch (_) {}
 }
 
@@ -248,6 +263,11 @@ function showReport() {
   $('report-dialog').showModal();
 }
 
+function currentPageRows() {
+  const effectiveSize = pageSize === 'all' ? rowsCurrent.length || 1 : Number(pageSize) || 50;
+  return pageSize === 'all' ? rowsCurrent : rowsCurrent.slice(page * effectiveSize, (page + 1) * effectiveSize);
+}
+
 function updateSelectionControls() {
   const count = selectedSections.size;
   const countLabel = document.querySelector('#selection-count');
@@ -258,7 +278,7 @@ function updateSelectionControls() {
   if (copyButton) copyButton.disabled = count === 0;
   const clearButton = document.querySelector('#clear-selection');
   if (clearButton) clearButton.disabled = count === 0;
-  const pageRows = rowsCurrent.slice(page * 50, (page + 1) * 50);
+  const pageRows = currentPageRows();
   const pageButton = document.querySelector('#toggle-page-selection');
   if (pageButton) {
     pageButton.disabled = pageRows.length === 0;
@@ -499,9 +519,10 @@ function show() {
   rows = sortRows(rows);
   rowsCurrent = rows;
   colCurrent = data.columns;
-  const totalPages = Math.max(1, Math.ceil(rows.length / 50));
+  const effectiveSize = pageSize === 'all' ? rows.length || 1 : Number(pageSize) || 50;
+  const totalPages = pageSize === 'all' ? 1 : Math.max(1, Math.ceil(rows.length / effectiveSize));
   page = Math.min(page, totalPages - 1);
-  const pageRows = rows.slice(page * 50, (page + 1) * 50);
+  const pageRows = pageSize === 'all' ? rows : rows.slice(page * effectiveSize, (page + 1) * effectiveSize);
   const selectable = tab === 'sections';
   const body = pageRows.map(row => '<tr>' + (selectable ? `<td class="selection-cell"><input type="checkbox" class="section-select" data-section-key="${escapeHtml(sectionKey(row))}" aria-label="Selecionar seção ${escapeHtml(row.sec)}, zona ${row.z}, ${escapeHtml(row.mun)}" ${selectedSections.has(sectionKey(row)) ? 'checked' : ''}></td>` : '') + data.columns.map(([key, label]) => {
     let value = row[key];
@@ -528,6 +549,17 @@ function show() {
   const iconPrev = '<svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>';
   const iconNext = '<svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>';
 
+  const pageSizeOptionsHtml = [
+    { val: '25', label: '25' },
+    { val: '50', label: '50' },
+    { val: '100', label: '100' },
+    { val: 'all', label: 'Todos' }
+  ].map(opt => `<option value="${opt.val}" ${String(pageSize) === opt.val ? 'selected' : ''}>${opt.label}</option>`).join('');
+
+  const pageInfoText = pageSize === 'all'
+    ? `Exibindo todos os ${fmt(rows.length)} registros`
+    : `Página ${page + 1} de ${totalPages} · ${fmt(rows.length)} registros`;
+
   $('tabcontent').innerHTML = `<section class="panel"><h2>${titles[tab]}</h2><p class="hint">${data.description}</p>${selectable ? `<div class="selection-toolbar"><div class="selection-status"><span class="badge badge-selection"><span class="badge-dot badge-dot-active"></span><strong id="selection-count"></strong></span><span class="selection-hint">Seleção preservada ao alternar filtros</span></div><div class="tools"><button class="btn" id="toggle-page-selection">${iconCheck} <span>Selecionar página</span></button><button class="btn" id="preview-report" ${selectedSections.size ? '' : 'disabled'}>${iconDoc} Ver Relatório</button><button class="btn" id="copy-selection-summary" ${selectedSections.size ? '' : 'disabled'}>${iconCopy} Copiar Resumo</button><button class="btn" id="clear-selection" ${selectedSections.size ? '' : 'disabled'}>${iconClear} Limpar</button></div></div>` : ''}<div class="toolbar"><div class="result-count"><span class="badge badge-subtle"><b>${fmt(rows.length)}</b> registros</span></div><div class="tools"><input class="search" id="q" value="${escapeHtml(search)}" placeholder="Buscar por seção, local, município..." aria-label="Buscar na tabela"><button class="btn" id="download" ${rows.length ? '' : 'disabled'}>${iconDownload} Exportar CSV</button><button class="btn" id="reset" ${search ? '' : 'disabled'}>${iconClear} Limpar</button></div></div><div class="mobile-sort"><label for="mobile-sort">Ordenar por</label><select id="mobile-sort">${data.columns.map(([key, label]) => `<option value="${escapeHtml(key)}" ${sortKey === key ? 'selected' : ''}>${escapeHtml(label)}</option>`).join('')}</select><button class="btn" type="button" id="mobile-sort-direction" aria-label="Alternar para ordem ${sortDir === 1 ? 'decrescente' : 'crescente'}">${sortDir === 1 ? 'Crescente ↑' : 'Decrescente ↓'}</button></div><div class="mobile-results" role="list" aria-label="Resultados da consulta">${mobileCards || `<div class="mobile-empty">${emptyMessage}</div>`}</div><div class="table-wrap"><table><thead><tr>${selectable ? '<th class="selection-cell">Selecionar</th>' : ''}${data.columns.map(([key, label]) => {
     const isSorted = sortKey === key;
     const direction = sortDir === 1 ? 'ascending' : 'descending';
@@ -537,7 +569,7 @@ function show() {
     const thClass = [isNum ? 'num' : '', isNome ? 'col-local-th' : '', `col-${key}`].filter(Boolean).join(' ');
     const indicatorHtml = indicator ? `<span class="sort-indicator" aria-hidden="true">${indicator}</span>` : '';
     return `<th data-key="${key}" class="${thClass}" aria-sort="${isSorted ? direction : 'none'}"><button class="sort-button" type="button" aria-label="Ordenar por ${label}"><span class="sort-label">${label}</span>${indicatorHtml}</button></th>`;
-  }).join('')}</tr></thead><tbody>${body || `<tr><td colspan="${data.columns.length + (selectable ? 1 : 0)}" class="empty-cell">${emptyMessage}</td></tr>`}</tbody></table></div><div class="page-controls"><span>Página ${page + 1} de ${totalPages} · Até 50 registros por página</span><div class="tools"><button class="btn" id="prev" ${page === 0 ? 'disabled' : ''}>${iconPrev} Anterior</button><button class="btn" id="next" ${page >= totalPages - 1 ? 'disabled' : ''}>Próxima ${iconNext}</button></div></div></section>`;
+  }).join('')}</tr></thead><tbody>${body || `<tr><td colspan="${data.columns.length + (selectable ? 1 : 0)}" class="empty-cell">${emptyMessage}</td></tr>`}</tbody></table></div><div class="page-controls"><div class="page-size-wrap"><label for="page-size">Exibir</label><select id="page-size" class="page-size-select" aria-label="Quantidade de registros por página">${pageSizeOptionsHtml}</select><span>por página</span><span class="page-divider" aria-hidden="true">·</span><span class="page-info">${pageInfoText}</span></div><div class="tools"><button class="btn" id="prev" ${page === 0 ? 'disabled' : ''}>${iconPrev} Anterior</button><button class="btn" id="next" ${page >= totalPages - 1 ? 'disabled' : ''}>Próxima ${iconNext}</button></div></div></section>`;
   updateSelectionControls();
   if (selectable) {
     $('toggle-page-selection').onclick = () => {
@@ -612,6 +644,17 @@ function show() {
   $('mobile-sort-direction').onclick = () => { sortDir *= -1; show(); };
   $('prev').onclick = () => { page--; show(); };
   $('next').onclick = () => { page++; show(); };
+  const pageSizeSelect = $('page-size');
+  if (pageSizeSelect) {
+    pageSizeSelect.onchange = event => {
+      const val = event.target.value;
+      pageSize = val === 'all' ? 'all' : Number(val) || 50;
+      persistPageSize();
+      page = 0;
+      hapticFeedback();
+      show();
+    };
+  }
   document.querySelectorAll('th[data-key]').forEach(element => element.onclick = () => {
     if (sortKey === element.dataset.key) sortDir *= -1;
     else { sortKey = element.dataset.key; sortDir = -1; }
@@ -766,6 +809,7 @@ if (DATA && PRESIDENT_DATA && PRESIDENT_DATA_2T) {
   document.querySelector('label[for="office"]').textContent = 'Votos exibidos';
   updateTurn();
   loadPersistedSelections();
+  loadPersistedPageSize();
   updateOfficeGuidance();
   show();
 }

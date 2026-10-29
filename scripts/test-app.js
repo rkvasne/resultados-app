@@ -401,6 +401,55 @@ test('Botão de exportar CSV fica desabilitado quando a tabela não possui regis
   assert.ok(scriptJs.includes('id="download" ${rows.length ? \'\' : \'disabled\'}'), 'botão download deve ter atributo disabled quando rows.length for 0');
 });
 
+// 13. Paginação e Tamanho de Página Dinâmico
+console.log('\n[13] Paginação e Quantidade de Resultados por Página:');
+
+test('script.js implementa controle dinâmico de tamanho de página e persistência', () => {
+  assert.ok(scriptJs.includes('let pageSize = 50;'), 'script.js deve declarar pageSize');
+  assert.ok(scriptJs.includes('loadPersistedPageSize()'), 'script.js deve carregar pageSize do localStorage');
+  assert.ok(scriptJs.includes('persistPageSize('), 'script.js deve persistir pageSize no localStorage');
+  assert.ok(scriptJs.includes('currentPageRows()'), 'script.js deve usar helper currentPageRows');
+  assert.ok(scriptJs.includes('id="page-size"'), 'script.js deve renderizar select #page-size');
+  assert.ok(stylesCss.includes('.page-size-wrap'), 'styles.css deve estilizar .page-size-wrap');
+  assert.ok(stylesCss.includes('.page-size-select'), 'styles.css deve estilizar .page-size-select');
+});
+
+test('Lógica de paginação fatia linhas corretamente para 25, 50, 100 e Todos', () => {
+  const mockRows = Array.from({ length: 120 }, (_, i) => ({ id: i + 1 }));
+
+  const slicePage = (rows, page, size) => {
+    const effectiveSize = size === 'all' ? (rows.length || 1) : (parseInt(size, 10) || 50);
+    const totalPages = Math.max(1, Math.ceil(rows.length / effectiveSize));
+    const safePage = Math.min(Math.max(0, page), totalPages - 1);
+    const start = safePage * effectiveSize;
+    const pageRows = size === 'all' ? rows : rows.slice(start, start + effectiveSize);
+    return { effectiveSize, totalPages, safePage, pageRows };
+  };
+
+  // 25 por página
+  const p25 = slicePage(mockRows, 0, 25);
+  assert.strictEqual(p25.totalPages, 5);
+  assert.strictEqual(p25.pageRows.length, 25);
+  assert.strictEqual(p25.pageRows[0].id, 1);
+
+  // 50 por página
+  const p50 = slicePage(mockRows, 1, 50);
+  assert.strictEqual(p50.totalPages, 3);
+  assert.strictEqual(p50.pageRows.length, 50);
+  assert.strictEqual(p50.pageRows[0].id, 51);
+
+  // 100 por página
+  const p100 = slicePage(mockRows, 1, 100);
+  assert.strictEqual(p100.totalPages, 2);
+  assert.strictEqual(p100.pageRows.length, 20); // resto
+  assert.strictEqual(p100.pageRows[0].id, 101);
+
+  // Todos
+  const pAll = slicePage(mockRows, 0, 'all');
+  assert.strictEqual(pAll.totalPages, 1);
+  assert.strictEqual(pAll.pageRows.length, 120);
+});
+
 console.log(`\n=== Resultado: ${passedTests}/${totalTests} testes aprovados com sucesso! ===\n`);
 if (passedTests !== totalTests) {
   process.exit(1);

@@ -2,6 +2,24 @@
 
 Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/). A primeira versão publicada é `0.0.1`.
 
+## [0.1.1] - 2026-10-29
+
+### Adicionado e Melhorado
+
+- **Controle dinâmico de quantidade de resultados por página:**
+  - Seletor nativo acessível na barra inferior de paginação (`.page-controls`) com opções: `25`, `50`, `100` e `Todos`.
+  - Padrão inicial calibrado em 50 registros por página, mantendo boa densidade visual e rolagem contida.
+  - Persistência automática da preferência do usuário em `localStorage` sob a chave `'resultados_app_page_size'`, preservando a escolha entre recargas de página.
+  - Centralização do fatiamento de dados através do helper unificado `currentPageRows()`, garantindo consistência estrita tanto na renderização das linhas quanto no comportamento de marcação em lote ("Selecionar página" / "Desmarcar").
+  - Quando a opção "Todos" está ativa, a paginação desabilita os botões de navegação e consolida a visualização contínua com contador `Exibindo todos os X registros`.
+  - Adaptação responsiva para telas menores (mobile) em `responsive.css`, empilhando verticalmente controles e seletor com alinhamento limpo e botões táteis.
+
+### Verificado
+
+- Suíte de 32/32 testes automatizados aprovada com sucesso (`scripts/test-app.js`).
+- Validação de sintaxe JavaScript (`node --check`) sem erros ou pendências.
+- Conformidade de código e ausência de trailing whitespaces validada via `git diff --check`.
+
 ## [0.1.0] - 2026-10-29
 
 ### Adicionado e Melhorado

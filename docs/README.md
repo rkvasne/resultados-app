@@ -9,6 +9,7 @@ Documentação local do Painel Eleitoral das 3ª e 30ª Zonas Eleitorais de Rond
 
 ## Checkpoints
 
+- [Checkpoint 0.1.1](checkpoint-0.1.1.md): seletor dinâmico de quantidade de resultados por página (25, 50, 100, Todos), persistência e adaptação mobile.
 - [Checkpoint 0.1.0](checkpoint-0.1.0.md): marco de maturação (minor release): saneamento de código, documentação e exportação amigável.
 - [Checkpoint 0.0.25](checkpoint-0.0.25.md): nomenclatura amigável para CSVs e proteção contra exportação vazia.
 - [Checkpoint 0.0.24](checkpoint-0.0.24.md): alinhamento milimétrico entre dados e títulos de colunas na tabela de apuração e relatório.
