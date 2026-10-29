@@ -200,8 +200,8 @@ function reportRows() {
 }
 
 function reportSources() {
-  const turn = $('turn').value;
-  const president = turn === '2' || $('office').value === 'Presidente';
+  const turn = $('turn')?.value || '2';
+  const president = turn === '2' || $('office')?.value === 'Presidente';
   const data = turn === '2' ? PRESIDENT_DATA_2T : president ? PRESIDENT_DATA : null;
   if (data) {
     const attendance = data.sourceUrls?.attendance || 'https://cdn.tse.jus.br/estatistica/sead/odsele/detalhe_votacao_secao/detalhe_votacao_secao_2026.zip';
@@ -221,9 +221,10 @@ function showReport() {
   const summary = totals(rows);
   const weightedRate = pct(summary.abs, summary.apt);
   const averageRate = rows.reduce((total, row) => total + pct(row.abs, row.apt), 0) / rows.length;
-  const date = $('turn').value === '2' ? '25/10/2026' : '04/10/2026';
-  const cargo = $('turn').value === '2' ? 'Presidente' : $('office').value;
-  const isPresident = $('turn').value === '2' || cargo === 'Presidente';
+  const turn = $('turn')?.value || '2';
+  const date = turn === '2' ? '25/10/2026' : '04/10/2026';
+  const cargo = turn === '2' ? 'Presidente' : ($('office')?.value || 'Presidente');
+  const isPresident = turn === '2' || cargo === 'Presidente';
   const sources = reportSources();
   const zones = [...new Set(rows.map(row => row.z))].sort((a, b) => a - b);
   const sourceItems = sources.map(source => {
@@ -341,7 +342,7 @@ function dataForTab() {
   if (tab === 'sections') {
     const voteRows = office === 'Presidente' ? presidentData.sections : DATA.votes;
     const votes = new Map(voteRows.filter(row => row.cargo === office).map(row => [[row.z, row.mun, row.sec].join('|'), row]));
-    const mismatchKeys = new Set(presidentData.comparisonMismatches.map(row => [row.z, row.mun, row.sec].join('|')));
+    const mismatchKeys = new Set((presidentData?.comparisonMismatches || []).map(row => [row.z, row.mun, row.sec].join('|')));
     return {
       columns: [['z', 'ZE'], ['mun', 'Município'], ['sec', 'Seção'], ['local', 'Local nº'], ['nome', 'Local de votação'], ['apt', 'Aptos'], ['comp', 'Comparecimento'], ['abs', 'Abstenções'], ['rate', 'Abstenção %'], ['br', 'Brancos'], ['nu', 'Nulos'], ['nom', 'Nominais'], ['leg', 'Legenda'], ['bu', 'Recebimento do BU']],
       rows: sections.map(row => ({ ...row, ...(votes.get([row.z, row.mun, row.sec].join('|')) || {}), rate: pct(row.abs, row.apt) })),

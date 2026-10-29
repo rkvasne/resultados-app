@@ -2,6 +2,29 @@
 
 Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/). A primeira versão publicada é `0.0.1`.
 
+## [0.1.0] - 2026-10-29
+
+### Adicionado e Melhorado
+
+- **Marco de Maturação do Painel (Minor Release 0.1.0):**
+  - Conclusão dos ciclos de auditoria e saneamento com execução do Prompt 20 (Code Janitor), Prompt 25 (Documentation Janitor) e Code Review formal.
+  - Nomenclatura amigável, clara e contextual em português para arquivos exportados em CSV (`exportFileName`), com tradução de abas técnicas e inclusão de slugs de zona e município.
+  - Alinhamento milimétrico entre títulos de colunas e dados numéricos/textuais, com centralização direta e contêiner `.rate-cell` para badges percentuais.
+  - Proteção contra exportação vazia com desabilitação contextual de botão e avisos em toast.
+  - Navegação defensiva e segura via *optional chaining* em manipulações de seletores (`turn`, `office`) e no tratamento de divergências de apuração (`comparisonMismatches`).
+  - Sincronização e saneamento da documentação de persistência em `docs/architecture.md` (especificando a retenção de seleções em `localStorage`) e reorganização estrutural do índice em `docs/README.md`.
+
+### Aprendizado da Release
+
+- *Fato observado:* Tabelas ricas que combinam texto longo (nomes de escolas) e métricas compactas (números de seção e percentuais) requerem alinhamento explícito por tipo de dado (texto à esquerda, códigos e métricas ao centro) para eliminar ilusão de deslocamento horizontal causada por botões de ordenação flexbox.
+- *Fato observado:* Nomenclatura contextual de arquivos baixados com termos em português acelera o arquivamento e organização por parte de usuários não técnicos.
+
+### Verificado
+
+- Suíte completa de 30/30 testes automatizados aprovada com sucesso (`scripts/test-app.js`).
+- Validação estrita de sintaxe JavaScript (`node --check`) sem erros ou avisos.
+- Conformidade de formatação e ausência de trailing whitespaces validada via `git diff --check`.
+
 ## [0.0.25] - 2026-10-29
 
 ### Melhorado

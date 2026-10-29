@@ -38,7 +38,7 @@ O cabeçalho identifica o produto como painel independente, sem usar a identific
 
 ## Persistência e rede
 
-Os dados locais são lidos em memória durante a execução da página. O painel não grava alterações em `localStorage`, não usa banco de dados e não envia os dados consultados a um servidor. A exportação gera um arquivo CSV baixável pelo navegador.
+Os dados eleitorais locais são lidos em memória durante a execução da página. O painel grava apenas as seleções ativas de seções no `localStorage` do navegador para preservar o trabalho do usuário entre turnos e recarregamentos de página, não usa banco de dados externo e não envia dados a nenhum servidor. A exportação gera um arquivo CSV baixável localmente pelo navegador.
 
 Os CSVs de origem não são atualizados automaticamente. Para atualizar os cargos estaduais, substitua o JSON incorporado ao HTML; para Presidente, gere os recortes com `node scripts/import-president.js --write` e `node scripts/import-president-2t.js --write`. Consulte [Fontes e tratamento dos dados](data-sources.md).
 

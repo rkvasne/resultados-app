@@ -2,8 +2,14 @@
 
 Documentação local do Painel Eleitoral das 3ª e 30ª Zonas Eleitorais de Rondônia. As instruções e referências deste projeto são mantidas neste repositório.
 
-## Guias
+## Arquitetura e Fontes
 
+- [Arquitetura e funcionamento](architecture.md): arquivos, fluxo no navegador, armazenamento, persistência e operação offline.
+- [Fontes e tratamento dos dados](data-sources.md): conjuntos TSE, escopo, cruzamentos, validações e limitações conhecidas.
+
+## Checkpoints
+
+- [Checkpoint 0.1.0](checkpoint-0.1.0.md): marco de maturação (minor release): saneamento de código, documentação e exportação amigável.
 - [Checkpoint 0.0.25](checkpoint-0.0.25.md): nomenclatura amigável para CSVs e proteção contra exportação vazia.
 - [Checkpoint 0.0.24](checkpoint-0.0.24.md): alinhamento milimétrico entre dados e títulos de colunas na tabela de apuração e relatório.
 - [Checkpoint 0.0.23](checkpoint-0.0.23.md): rebalanceamento de colunas: aumento de local de votação para 250px e largura mínima para colunas numéricas.
@@ -19,12 +25,10 @@ Documentação local do Painel Eleitoral das 3ª e 30ª Zonas Eleitorais de Rond
 - [Checkpoint 0.0.13](checkpoint-0.0.13.md): escala tipográfica e validação visual do painel e relatório.
 - [Checkpoint 0.0.12](checkpoint-0.0.12.md): alinhamento dos controles de busca e exportação em telas largas.
 - [Checkpoint 0.0.11](checkpoint-0.0.11.md): revisão responsiva da interface, validação dos importadores e evidências do checkpoint.
-- [Arquitetura e funcionamento](architecture.md): arquivos, fluxo no navegador, armazenamento e operação offline.
-- [Fontes e tratamento dos dados](data-sources.md): conjuntos TSE, escopo, cruzamentos, validações e limitações conhecidas.
-- [Checkpoint 0.0.7](checkpoint-0.0.7.md): revisão, escopo da entrega e evidências de verificação.
-- [Checkpoint 0.0.8](checkpoint-0.0.8.md): correção da paginação do relatório PDF.
-- [Checkpoint 0.0.9](checkpoint-0.0.9.md): validação dos dados do 2º turno e seleção inicial da apuração mais recente.
 - [Checkpoint 0.0.10](checkpoint-0.0.10.md): identificação das fontes no relatório e alinhamento das colunas numéricas.
+- [Checkpoint 0.0.9](checkpoint-0.0.9.md): validação dos dados do 2º turno e seleção inicial da apuração mais recente.
+- [Checkpoint 0.0.8](checkpoint-0.0.8.md): correção da paginação do relatório PDF.
+- [Checkpoint 0.0.7](checkpoint-0.0.7.md): revisão, escopo da entrega e evidências de verificação.
 
 ## Documentos relacionados
 
