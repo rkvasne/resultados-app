@@ -2,6 +2,23 @@
 
 Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/). A primeira versão publicada é `0.0.1`.
 
+## [0.0.24] - 2026-10-29
+
+### Melhorado
+
+- **Alinhamento milimétrico entre dados e títulos de colunas:**
+  - Colunas de texto ("Município", "Local de votação", "Endereço", "Partido", "Situação", "Destinação") alinhadas à esquerda (`text-align: left`) tanto nos títulos quanto nos dados, fazendo com que o texto inicie no mesmo pixel de referência.
+  - Colunas numéricas e de código ("Aptos", "Comparecimento", "Abstenções", "ZE", "Seção", "Local nº", "Brancos", "Nulos", "Nominais", "Legenda") alinhadas ao centro (`text-align: center`), com números centralizados rigorosamente sob os títulos das colunas.
+  - Coluna composta "Abstenção %" com contêiner `.rate-cell` em flex centralizado (`display: inline-flex; align-items: center; justify-content: center; gap: 8px`), posicionando a tag de porcentagem e a barra de progresso centralizadas sob o título.
+  - Indicador de ordenação (`.sort-indicator`) renderizado condicionalmente apenas quando houver ordenação ativa na coluna, eliminando espaço fantasma no cabeçalho quando inativo.
+  - Tabela do modal de relatório (`.report-table`) alinhada com as mesmas regras de consistência para visualização e impressão.
+
+### Verificado
+
+- Suíte de 27/27 testes automatizados aprovada com sucesso (`scripts/test-app.js`).
+- Validação visual em navegador via captura de tela atestando dados centralizados e alinhados diretamente sob seus respectivos títulos.
+- Sintaxe validada via `node --check`.
+
 ## [0.0.23] - 2026-10-29
 
 ### Melhorado

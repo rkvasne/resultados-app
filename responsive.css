@@ -226,8 +226,8 @@ button:disabled { color: var(--muted); opacity: .68; }
 .sort-button {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 6px;
+  justify-content: flex-start;
+  gap: 4px;
   width: 100%;
   min-height: 40px;
   padding: 8px 10px;
@@ -239,7 +239,13 @@ button:disabled { color: var(--muted); opacity: .68; }
   cursor: pointer;
 }
 th { padding: 0; }
-th.num .sort-button { justify-content: flex-end; padding: 8px 7px; gap: 4px; }
+th.num .sort-button { justify-content: center; padding: 8px 6px; gap: 4px; }
+th.col-mun .sort-button,
+th.col-nome .sort-button,
+th.col-end .sort-button,
+th.col-partido .sort-button,
+th.col-sit .sort-button,
+th.col-dest .sort-button { justify-content: flex-start; padding: 8px 10px; }
 
 .sort-button:focus-visible,
 .tab:focus-visible,
@@ -288,7 +294,7 @@ select:focus-visible,
 }
 .table-wrap { max-height: 560px; overscroll-behavior: contain; }
 .table-wrap th, .table-wrap td { padding: 9px 10px; }
-.table-wrap td.num { padding: 9px 7px; }
+.table-wrap td.num { padding: 9px 6px; text-align: center; }
 .table-wrap th.selection-cell, .table-wrap td.selection-cell { padding: 9px 6px; text-align: center; }
 .mobile-sort, .mobile-results { display: none; }
 
@@ -349,7 +355,8 @@ select:focus-visible,
 .report-table { width: 100%; border-collapse: collapse; white-space: nowrap; font-size: 12px; line-height: 1.4; }
 .report-table th { position: static; padding: 8px; background: var(--table-th-bg); color: var(--ink); text-align: left; }
 .report-table td { padding: 7px 8px; border-bottom: 1px solid var(--table-border); }
-.report-table .num { text-align: right; font-variant-numeric: tabular-nums; width: 1%; white-space: nowrap; padding: 7px 6px; }
+.report-table .num { text-align: center; font-variant-numeric: tabular-nums; width: 1%; white-space: nowrap; padding: 7px 6px; }
+.report-table th.num { text-align: center; }
 .report-provenance { margin-top: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--card-alt); color: var(--muted); font-size: 12px; line-height: 1.5; }
 .report-provenance h2 { margin: 0 0 5px; color: var(--ink); font-size: 13px; line-height: 1.35; }
 .report-provenance p { max-width: none; margin: 4px 0; }

@@ -522,7 +522,7 @@ td {
 }
 
 td.num, th.num {
-  text-align: right;
+  text-align: center;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
   width: 1%;
@@ -531,13 +531,30 @@ td.num, th.num {
 th.selection-cell,
 td.selection-cell {
   width: 1%;
+  text-align: center;
   white-space: nowrap;
+}
+
+th.col-mun,
+td.col-mun,
+th.col-nome,
+td.col-nome,
+th.col-end,
+td.col-end,
+th.col-partido,
+td.col-partido,
+th.col-sit,
+td.col-sit,
+th.col-dest,
+td.col-dest {
+  text-align: left;
 }
 
 th.col-local-th,
 td.col-local-cell {
   width: 250px;
   max-width: 250px;
+  text-align: left;
 }
 
 .col-local-text {
@@ -546,6 +563,13 @@ td.col-local-cell {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.rate-cell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .pill {

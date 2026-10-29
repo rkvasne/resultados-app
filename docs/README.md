@@ -4,6 +4,7 @@ Documentação local do Painel Eleitoral das 3ª e 30ª Zonas Eleitorais de Rond
 
 ## Guias
 
+- [Checkpoint 0.0.24](checkpoint-0.0.24.md): alinhamento milimétrico entre dados e títulos de colunas na tabela de apuração e relatório.
 - [Checkpoint 0.0.23](checkpoint-0.0.23.md): rebalanceamento de colunas: aumento de local de votação para 250px e largura mínima para colunas numéricas.
 - [Checkpoint 0.0.22](checkpoint-0.0.22.md): compactação e truncamento elegante da coluna "Local de votação" com tooltip no hover.
 - [Checkpoint 0.0.21](checkpoint-0.0.21.md): refinamento tipográfico contemporâneo, remoção de truncamento em votos exibidos e quebra fluida de textos.

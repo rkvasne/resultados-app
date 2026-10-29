@@ -504,7 +504,7 @@ function show() {
   const selectable = tab === 'sections';
   const body = pageRows.map(row => '<tr>' + (selectable ? `<td class="selection-cell"><input type="checkbox" class="section-select" data-section-key="${escapeHtml(sectionKey(row))}" aria-label="Selecionar seção ${escapeHtml(row.sec)}, zona ${row.z}, ${escapeHtml(row.mun)}" ${selectedSections.has(sectionKey(row)) ? 'checked' : ''}></td>` : '') + data.columns.map(([key, label]) => {
     let value = row[key];
-    if (key === 'rate') value = `<span class="pill">${pf(value)}</span><span class="bar"><span class="fill" style="display:block;width:${Math.min(100, value)}%"></span></span>`;
+    if (key === 'rate') value = `<span class="rate-cell"><span class="pill">${pf(value)}</span><span class="bar"><span class="fill" style="display:block;width:${Math.min(100, value)}%"></span></span></span>`;
     else if (typeof value === 'number') value = fmt(value);
     else value = escapeHtml(value);
     const isNum = typeof row[key] === 'number';
@@ -512,7 +512,7 @@ function show() {
     if (isNome) {
       value = `<span class="col-local-text">${value ?? ''}</span>`;
     }
-    const cellClass = [isNum ? 'num' : '', isNome ? 'col-local-cell' : ''].filter(Boolean).join(' ');
+    const cellClass = [isNum ? 'num' : '', isNome ? 'col-local-cell' : '', `col-${key}`].filter(Boolean).join(' ');
     const cellTitle = isNome && row[key] ? ` title="${escapeHtml(row[key])}"` : '';
     return `<td class="${cellClass}" data-label="${escapeHtml(label)}"${cellTitle}>${value ?? ''}</td>`;
   }).join('') + '</tr>').join('');
@@ -533,8 +533,9 @@ function show() {
     const indicator = isSorted ? (sortDir === 1 ? '↑' : '↓') : '';
     const isNum = typeof rows[0]?.[key] === 'number';
     const isNome = key === 'nome';
-    const thClass = [isNum ? 'num' : '', isNome ? 'col-local-th' : ''].filter(Boolean).join(' ');
-    return `<th data-key="${key}" class="${thClass}" aria-sort="${isSorted ? direction : 'none'}"><button class="sort-button" type="button" aria-label="Ordenar por ${label}">${label}<span aria-hidden="true">${indicator}</span></button></th>`;
+    const thClass = [isNum ? 'num' : '', isNome ? 'col-local-th' : '', `col-${key}`].filter(Boolean).join(' ');
+    const indicatorHtml = indicator ? `<span class="sort-indicator" aria-hidden="true">${indicator}</span>` : '';
+    return `<th data-key="${key}" class="${thClass}" aria-sort="${isSorted ? direction : 'none'}"><button class="sort-button" type="button" aria-label="Ordenar por ${label}"><span class="sort-label">${label}</span>${indicatorHtml}</button></th>`;
   }).join('')}</tr></thead><tbody>${body || `<tr><td colspan="${data.columns.length + (selectable ? 1 : 0)}" class="empty-cell">${emptyMessage}</td></tr>`}</tbody></table></div><div class="page-controls"><span>Página ${page + 1} de ${totalPages} · Até 50 registros por página</span><div class="tools"><button class="btn" id="prev" ${page === 0 ? 'disabled' : ''}>${iconPrev} Anterior</button><button class="btn" id="next" ${page >= totalPages - 1 ? 'disabled' : ''}>Próxima ${iconNext}</button></div></div></section>`;
   updateSelectionControls();
   if (selectable) {
