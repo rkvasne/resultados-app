@@ -317,16 +317,21 @@ function renderMetrics() {
 
 function updateOfficeGuidance() {
   const help = document.querySelector('.office-field small');
+  if (!help) return;
   const isPresident = $('office').value === 'Presidente';
   const secondTurn = $('turn').value === '2';
   help.id = 'office-help';
   $('office').setAttribute('aria-describedby', help.id);
   $('office').disabled = secondTurn;
-  help.textContent = secondTurn
-    ? 'No 2º turno, o painel apresenta apenas Presidente e a abstenção da apuração de 25/10/2026.'
-    : isPresident
-    ? 'Indicadores e votos usam a apuração presidencial do TSE. A visão por partido não está disponível.'
-    : 'Indicadores e votos usam a apuração estadual do TSE.';
+  if (secondTurn) {
+    help.textContent = '';
+    help.style.display = 'none';
+  } else {
+    help.style.display = 'block';
+    help.textContent = isPresident
+      ? 'Apuração presidencial oficial do TSE.'
+      : 'Apuração estadual oficial do TSE.';
+  }
 }
 
 function dataForTab() {

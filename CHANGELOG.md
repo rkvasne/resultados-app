@@ -2,6 +2,28 @@
 
 Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/). A primeira versão publicada é `0.0.1`.
 
+## [0.0.21] - 2026-10-29
+
+### Melhorado
+
+- **Remoção de truncamento em "Votos exibidos":**
+  - No 2º turno, o elemento descritivo `<small>` abaixo do seletor de cargo é completamente ocultado via `script.js` (`display: none; textContent = ''`), eliminando a frase cortada com reticências.
+  - No 1º turno, o texto é direto e sem reticências ou quebras indesejadas.
+- **Quebra fluida de textos descritivos:**
+  - Remoção do limite rígido `max-width: 84ch` de `.hint` e de cabeçalhos de painel.
+  - O texto explicativo de apuração do 2º turno e seções agora flui sem quebras artificiais de linha em monitores desktop.
+- **Refinamento tipográfico contemporâneo (legibilidade e contraste balanceado):**
+  - Rótulos dos campos (`.field label`) aumentados de 10px/11px para `13px` com peso `500` (Medium) e cor contrastante Slate-700 (`#334155`).
+  - Escala base padronizada em `14px/1.5`, eliminando textos excessivamente miniaturizados ou apagados.
+  - Substituição de pesos bold agressivos (800/850) por semibold natural (`600`) e Slate-900 (`#0f172a`).
+  - Limpeza e unificação de regras concorrentes em `responsive.css`.
+
+### Verificado
+
+- Suíte de 27/27 testes automatizados aprovada com sucesso (`scripts/test-app.js`).
+- Validação visual em browser confirmando ausência de cortes, leitura fluida e rótulos legíveis.
+- Sintaxe validada via `node --check`.
+
 ## [0.0.20] - 2026-10-28
 
 ### Melhorado
