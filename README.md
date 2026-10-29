@@ -6,7 +6,7 @@ Painel independente, estático e offline para consultar abstenção por seção 
 
 **Escopo:** Ji-Paraná e Presidente Médici, conforme a zona eleitoral
 
-**Versão:** 0.1.2
+**Versão:** 0.1.3
 
 **Documentação revisada em:** 29/10/2026
 
@@ -38,6 +38,7 @@ Não é necessário instalar dependências, configurar servidor, criar `.env.loc
 - Ordenação móvel por campo e direção, com dados adicionais expansíveis nos cartões.
 - Hierarquia tipográfica unificada com fontes do sistema, sem dependências externas, para leitura consistente também offline.
 - Caixas de seleção nativas de 16 px, com área de toque acessível no celular e realce da seção selecionada.
+- Checkbox mestre no cabeçalho da tabela para selecionar ou desmarcar todos os registros filtrados em lote, com estado indeterminado e feedback instantâneo.
 - Suporte nativo ao Modo Escuro (`prefers-color-scheme: dark`) e sensibilidade a movimento (`prefers-reduced-motion: reduce`).
 - Navegação fluida por teclado nas abas por setas direcionais (WAI-ARIA Tabs pattern) e anel de foco de alto contraste.
 - Estado vazio (*empty state*) interativo com botão direto para "Limpar busca e filtros".

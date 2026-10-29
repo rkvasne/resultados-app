@@ -286,6 +286,16 @@ function updateSelectionControls() {
     const checkSvg = '<svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>';
     pageButton.innerHTML = `${checkSvg} <span>${isAll ? 'Desmarcar página' : 'Selecionar página'}</span>`;
   }
+  const headerCheckbox = document.querySelector('#select-all-header');
+  if (headerCheckbox) {
+    const totalFiltered = rowsCurrent.length;
+    const allFilteredSelected = totalFiltered > 0 && rowsCurrent.every(row => selectedSections.has(sectionKey(row)));
+    const someFilteredSelected = !allFilteredSelected && rowsCurrent.some(row => selectedSections.has(sectionKey(row)));
+    headerCheckbox.disabled = totalFiltered === 0;
+    headerCheckbox.checked = allFilteredSelected;
+    headerCheckbox.indeterminate = someFilteredSelected;
+    headerCheckbox.title = allFilteredSelected ? 'Desmarcar todos os registros filtrados' : 'Selecionar todos os registros filtrados';
+  }
 }
 
 function orderOfficeOptions() {
@@ -560,7 +570,7 @@ function show() {
     ? `Exibindo todos os ${fmt(rows.length)} registros`
     : `Página ${page + 1} de ${totalPages} · ${fmt(rows.length)} registros`;
 
-  $('tabcontent').innerHTML = `<section class="panel"><h2>${titles[tab]}</h2><p class="hint">${data.description}</p>${selectable ? `<div class="selection-toolbar"><div class="selection-status"><span class="badge badge-selection"><span class="badge-dot badge-dot-active"></span><strong id="selection-count"></strong></span><span class="selection-hint">Seleção preservada ao alternar filtros</span></div><div class="tools"><button class="btn" id="toggle-page-selection">${iconCheck} <span>Selecionar página</span></button><button class="btn" id="preview-report" ${selectedSections.size ? '' : 'disabled'}>${iconDoc} Ver Relatório</button><button class="btn" id="copy-selection-summary" ${selectedSections.size ? '' : 'disabled'}>${iconCopy} Copiar Resumo</button><button class="btn" id="clear-selection" ${selectedSections.size ? '' : 'disabled'}>${iconClear} Limpar</button></div></div>` : ''}<div class="toolbar"><div class="result-count"><span class="badge badge-subtle"><b>${fmt(rows.length)}</b> registros</span></div><div class="tools"><input class="search" id="q" value="${escapeHtml(search)}" placeholder="Buscar por seção, local, município..." aria-label="Buscar na tabela"><button class="btn" id="download" ${rows.length ? '' : 'disabled'}>${iconDownload} Exportar CSV</button><button class="btn" id="reset" ${search ? '' : 'disabled'}>${iconClear} Limpar</button></div></div><div class="mobile-sort"><label for="mobile-sort">Ordenar por</label><select id="mobile-sort">${data.columns.map(([key, label]) => `<option value="${escapeHtml(key)}" ${sortKey === key ? 'selected' : ''}>${escapeHtml(label)}</option>`).join('')}</select><button class="btn" type="button" id="mobile-sort-direction" aria-label="Alternar para ordem ${sortDir === 1 ? 'decrescente' : 'crescente'}">${sortDir === 1 ? 'Crescente ↑' : 'Decrescente ↓'}</button></div><div class="mobile-results" role="list" aria-label="Resultados da consulta">${mobileCards || `<div class="mobile-empty">${emptyMessage}</div>`}</div><div class="table-wrap"><table><thead><tr>${selectable ? '<th class="selection-cell">Selecionar</th>' : ''}${data.columns.map(([key, label]) => {
+  $('tabcontent').innerHTML = `<section class="panel"><h2>${titles[tab]}</h2><p class="hint">${data.description}</p>${selectable ? `<div class="selection-toolbar"><div class="selection-status"><span class="badge badge-selection"><span class="badge-dot badge-dot-active"></span><strong id="selection-count"></strong></span><span class="selection-hint">Seleção preservada ao alternar filtros</span></div><div class="tools"><button class="btn" id="toggle-page-selection">${iconCheck} <span>Selecionar página</span></button><button class="btn" id="preview-report" ${selectedSections.size ? '' : 'disabled'}>${iconDoc} Ver Relatório</button><button class="btn" id="copy-selection-summary" ${selectedSections.size ? '' : 'disabled'}>${iconCopy} Copiar Resumo</button><button class="btn" id="clear-selection" ${selectedSections.size ? '' : 'disabled'}>${iconClear} Limpar</button></div></div>` : ''}<div class="toolbar"><div class="result-count"><span class="badge badge-subtle"><b>${fmt(rows.length)}</b> registros</span></div><div class="tools"><input class="search" id="q" value="${escapeHtml(search)}" placeholder="Buscar por seção, local, município..." aria-label="Buscar na tabela"><button class="btn" id="download" ${rows.length ? '' : 'disabled'}>${iconDownload} Exportar CSV</button><button class="btn" id="reset" ${search ? '' : 'disabled'}>${iconClear} Limpar</button></div></div><div class="mobile-sort"><label for="mobile-sort">Ordenar por</label><select id="mobile-sort">${data.columns.map(([key, label]) => `<option value="${escapeHtml(key)}" ${sortKey === key ? 'selected' : ''}>${escapeHtml(label)}</option>`).join('')}</select><button class="btn" type="button" id="mobile-sort-direction" aria-label="Alternar para ordem ${sortDir === 1 ? 'decrescente' : 'crescente'}">${sortDir === 1 ? 'Crescente ↑' : 'Decrescente ↓'}</button></div><div class="mobile-results" role="list" aria-label="Resultados da consulta">${mobileCards || `<div class="mobile-empty">${emptyMessage}</div>`}</div><div class="table-wrap"><table><thead><tr>${selectable ? '<th class="selection-cell" title="Selecionar ou desmarcar todos os registros filtrados"><label class="selection-header-wrap" for="select-all-header"><input type="checkbox" id="select-all-header" aria-label="Selecionar todos os registros filtrados"><span class="sr-only">Selecionar todos</span></label></th>' : ''}${data.columns.map(([key, label]) => {
     const isSorted = sortKey === key;
     const direction = sortDir === 1 ? 'ascending' : 'descending';
     const indicator = isSorted ? (sortDir === 1 ? '↑' : '↓') : '';
@@ -572,6 +582,33 @@ function show() {
   }).join('')}</tr></thead><tbody>${body || `<tr><td colspan="${data.columns.length + (selectable ? 1 : 0)}" class="empty-cell">${emptyMessage}</td></tr>`}</tbody></table></div><div class="page-controls"><div class="page-size-wrap"><label for="page-size" class="page-size-label">Exibir</label><select id="page-size" class="page-size-select" aria-label="Quantidade de registros por página">${pageSizeOptionsHtml}</select><span class="page-size-suffix">por página</span><span class="page-divider" aria-hidden="true">·</span><span class="page-info">${pageInfoText}</span></div><div class="tools"><button class="btn" id="prev" ${page === 0 ? 'disabled' : ''}>${iconPrev} Anterior</button><button class="btn" id="next" ${page >= totalPages - 1 ? 'disabled' : ''}>Próxima ${iconNext}</button></div></div></section>`;
   updateSelectionControls();
   if (selectable) {
+    const handleToggleAll = (event) => {
+      if (event) {
+        event.stopPropagation();
+      }
+      const total = rowsCurrent.length;
+      const allSelected = total > 0 && rowsCurrent.every(row => selectedSections.has(sectionKey(row)));
+      for (const row of rowsCurrent) {
+        if (allSelected) selectedSections.delete(sectionKey(row));
+        else selectedSections.add(sectionKey(row));
+      }
+      persistSelections();
+      hapticFeedback();
+      showToast(allSelected ? 'Todas as seções foram desmarcadas.' : `${fmt(rowsCurrent.length)} seções selecionadas.`);
+      show();
+    };
+
+    const selectAllHeader = $('select-all-header');
+    if (selectAllHeader) {
+      selectAllHeader.onchange = handleToggleAll;
+    }
+    const thSelection = document.querySelector('th.selection-cell');
+    if (thSelection) {
+      thSelection.onclick = (e) => {
+        if (e.target.id === 'select-all-header') return;
+        handleToggleAll(e);
+      };
+    }
     $('toggle-page-selection').onclick = () => {
       const allSelected = pageRows.length > 0 && pageRows.every(row => selectedSections.has(sectionKey(row)));
       for (const row of pageRows) {

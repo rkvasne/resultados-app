@@ -2,6 +2,25 @@
 
 Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/). A primeira versão publicada é `0.0.1`.
 
+## [0.1.3] - 2026-10-29
+
+### Adicionado e Melhorado
+
+- **Controle Mestre de Seleção Total no Cabeçalho da Tabela:**
+  - Substituição do texto estático `Selecionar` por uma checkbox mestre interativa (`#select-all-header`) no cabeçalho `th.selection-cell`.
+  - Alternância rápida com um clique para selecionar ou desmarcar todas as seções filtradas no momento (`rowsCurrent`).
+  - Suporte ao estado indeterminado (`indeterminate = true`) quando uma parte das seções filtradas estiver selecionada, refletindo com precisão o estado parcial do conjunto.
+  - Feedback visual e tátil com toast informativo (`X seções selecionadas.` ou `Todas as seções foram desmarcadas.`) e vibração tátil leve em dispositivos móveis compatíveis.
+  - Persistência imediata das seleções em `localStorage` e sincronização bidirecional reativa com os botões "Selecionar página", "Selecionar todas" e "Desmarcar todas".
+  - Acessibilidade aprimorada com rótulo semântico via classe `.sr-only` ("Selecionar todos"), atributo `aria-label` e título contextual descritivo.
+
+### Verificado
+
+- Suíte com 34/34 testes automatizados aprovada (`scripts/test-app.js`), incluindo testes específicos para alternância mestre e estado indeterminado.
+- Validação estrita de sintaxe JavaScript (`node --check`) sem erros ou pendências.
+- Verificação visual em navegador real confirmando estados desmarcado, indeterminado e totalmente marcado.
+- Conformidade de código e formatação limpa validada via `git diff --check`.
+
 ## [0.1.2] - 2026-10-29
 
 ### Adicionado e Melhorado

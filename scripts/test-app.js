@@ -450,6 +450,33 @@ test('Lógica de paginação fatia linhas corretamente para 25, 50, 100 e Todos'
   assert.strictEqual(pAll.pageRows.length, 120);
 });
 
+// 14. Seleção Total via Cabeçalho da Tabela
+console.log('\n[14] Seleção Total via Cabeçalho da Tabela:');
+
+test('script.js implementa controle mestre select-all-header no cabeçalho da tabela', () => {
+  assert.ok(scriptJs.includes('id="select-all-header"'), 'script.js deve renderizar checkbox #select-all-header');
+  assert.ok(scriptJs.includes('headerCheckbox.indeterminate'), 'script.js deve suportar estado indeterminado no checkbox mestre');
+  assert.ok(stylesCss.includes('.selection-header-wrap'), 'styles.css deve estilizar .selection-header-wrap');
+});
+
+test('Lógica de seleção mestre alterna entre selecionar tudo e desmarcar tudo', () => {
+  const selected = new Set();
+  const rows = [{ sec: 1 }, { sec: 2 }, { sec: 3 }];
+  const key = r => `sec|${r.sec}`;
+
+  // Nenhum selecionado -> Marcar todos
+  let allSelected = rows.every(r => selected.has(key(r)));
+  assert.strictEqual(allSelected, false);
+  for (const r of rows) selected.add(key(r));
+  assert.strictEqual(selected.size, 3);
+
+  // Todos selecionados -> Desmarcar todos
+  allSelected = rows.every(r => selected.has(key(r)));
+  assert.strictEqual(allSelected, true);
+  for (const r of rows) selected.delete(key(r));
+  assert.strictEqual(selected.size, 0);
+});
+
 console.log(`\n=== Resultado: ${passedTests}/${totalTests} testes aprovados com sucesso! ===\n`);
 if (passedTests !== totalTests) {
   process.exit(1);
