@@ -2,6 +2,21 @@
 
 Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/). A primeira versão publicada é `0.0.1`.
 
+## [0.0.23] - 2026-10-29
+
+### Melhorado
+
+- **Ajuste fino de largura das colunas da tabela:**
+  - Coluna "Local de votação" ampliada de `190px` para `250px` (`th.col-local-th`, `td.col-local-cell` e `.col-local-text`), exibindo mais texto antes do truncamento com reticências.
+  - Colunas numéricas ("Aptos", "Comparecimento", "Abstenções", "ZE", "Seção", "Local nº", "Brancos", "Nulos", "Nominais", "Legenda") configuradas com `width: 1%`, `white-space: nowrap` e padding horizontal ajustado para `7px` em células e cabeçalhos.
+  - As colunas numéricas agora ocupam o tamanho mínimo indispensável para acomodar seus títulos inteiros sem truncamento de texto, eliminando qualquer espaço ocioso e conferindo equilíbrio total à tabela.
+
+### Verificado
+
+- Suíte completa de 27/27 testes automatizados aprovada com sucesso (`scripts/test-app.js`).
+- Validação visual em navegador via captura de tela atestando colunas numéricas compactas, títulos legíveis e cabeçalho alinhado.
+- Sintaxe validada via `node --check`.
+
 ## [0.0.22] - 2026-10-29
 
 ### Melhorado

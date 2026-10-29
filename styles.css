@@ -524,17 +524,25 @@ td {
 td.num, th.num {
   text-align: right;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  width: 1%;
+}
+
+th.selection-cell,
+td.selection-cell {
+  width: 1%;
+  white-space: nowrap;
 }
 
 th.col-local-th,
 td.col-local-cell {
-  width: 190px;
-  max-width: 190px;
+  width: 250px;
+  max-width: 250px;
 }
 
 .col-local-text {
   display: block;
-  max-width: 190px;
+  max-width: 250px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
