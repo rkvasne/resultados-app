@@ -2,6 +2,22 @@
 
 Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/). A primeira versão publicada é `0.0.1`.
 
+## [0.0.22] - 2026-10-29
+
+### Melhorado
+
+- **Compactação e truncamento da coluna "Local de votação":**
+  - Redução da largura da coluna para `190px` com `text-overflow: ellipsis` (`.col-local-cell`, `.col-local-th` e `.col-local-text`).
+  - Nomes extensos de escolas e locais de votação agora são exibidos de forma compacta e truncados com reticências (`...`), liberando espaço horizontal para todas as colunas de métricas e apuração sem forçar rolagem lateral indesejada.
+  - Atributo `title` adicionado a cada célula com o nome completo original, permitindo visualização imediata por tooltip ao passar o cursor do mouse.
+  - Estilos de impressão (`@media print`) preservados com `max-width: none` e quebra natural, garantindo que relatórios em PDF exibam o nome completo dos locais de votação.
+
+### Verificado
+
+- Suíte de 27/27 testes automatizados aprovada com sucesso (`scripts/test-app.js`).
+- Validação visual via navegador registrando a nova largura equilibrada da tabela e truncamento com tooltip.
+- Sintaxe validada via `node --check`.
+
 ## [0.0.21] - 2026-10-29
 
 ### Melhorado

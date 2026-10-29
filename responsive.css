@@ -485,6 +485,8 @@ select:focus-visible,
   .report-table tr, .report-footer { break-inside: avoid; }
   .report-table th, .report-table td { padding: 4px 5px; color: #000 !important; }
   .report-table th { background: #e9edf4 !important; color: #111 !important; }
+  .report-table .col-local-th, .report-table .col-local-cell { width: auto; max-width: none; }
+  .report-table .col-local-text { max-width: none; white-space: normal; overflow: visible; }
   .report-metric { padding: 7px; background: #fff !important; border: 1px solid #ccc !important; }
   .report-metric strong { font-size: 14px; color: #000 !important; }
   .report-metric span { color: #555 !important; }

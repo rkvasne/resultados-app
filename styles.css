@@ -526,6 +526,20 @@ td.num, th.num {
   font-variant-numeric: tabular-nums;
 }
 
+th.col-local-th,
+td.col-local-cell {
+  width: 190px;
+  max-width: 190px;
+}
+
+.col-local-text {
+  display: block;
+  max-width: 190px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .pill {
   display: inline-block;
   background: rgba(225, 29, 72, 0.1);

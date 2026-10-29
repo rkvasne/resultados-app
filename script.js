@@ -241,9 +241,9 @@ function showReport() {
     ['Abstenções', fmt(summary.abs)],
     ['Taxa ponderada', pf(weightedRate)]
   ];
-  const body = rows.map(row => `<tr><td class="num">${row.z}</td><td>${escapeHtml(row.mun)}</td><td class="num">${fmt(row.sec)}</td><td class="num">${row.local ? fmt(row.local) : '—'}</td><td>${escapeHtml(row.nome)}</td><td class="num">${fmt(row.apt)}</td><td class="num">${fmt(row.comp)}</td><td class="num">${pf(pct(row.comp, row.apt))}</td><td class="num">${fmt(row.abs)}</td><td class="num">${pf(pct(row.abs, row.apt))}</td></tr>`).join('');
+  const body = rows.map(row => `<tr><td class="num">${row.z}</td><td>${escapeHtml(row.mun)}</td><td class="num">${fmt(row.sec)}</td><td class="num">${row.local ? fmt(row.local) : '—'}</td><td class="col-local-cell" title="${escapeHtml(row.nome)}"><span class="col-local-text">${escapeHtml(row.nome)}</span></td><td class="num">${fmt(row.apt)}</td><td class="num">${fmt(row.comp)}</td><td class="num">${pf(pct(row.comp, row.apt))}</td><td class="num">${fmt(row.abs)}</td><td class="num">${pf(pct(row.abs, row.apt))}</td></tr>`).join('');
   const selectedLabel = rows.length === 1 ? '1 seção selecionada' : `${rows.length} seções selecionadas`;
-  $('report-preview').innerHTML = `<header class="report-heading"><p>Eleições Gerais 2026 · ${date}</p><h1 id="report-title">Consulta de Comparecimento e Abstenção</h1><p>${$('turn').value}º turno · Cargo para resultados: ${escapeHtml(cargo)} · ${selectedLabel}</p></header><section class="report-metrics" aria-label="Resumo das seções selecionadas">${metrics.map(([name, value]) => `<div class="report-metric"><span>${name}</span><strong>${value}</strong></div>`).join('')}</section><p class="report-method">Taxa ponderada = total de abstenções ÷ total de eleitores aptos. A média simples das taxas por seção neste recorte é ${pf(averageRate)}; ela não substitui a taxa ponderada.</p><div class="report-table-wrap"><table class="report-table"><thead><tr><th class="num">ZE</th><th>Município</th><th class="num">Seção</th><th class="num">Local nº</th><th>Local de votação</th><th class="num">Aptos</th><th class="num">Comparecimento</th><th class="num">Comparecimento %</th><th class="num">Abstenções</th><th class="num">Abstenção %</th></tr></thead><tbody>${body}</tbody></table></div><section class="report-provenance" aria-label="Fonte e critérios dos dados"><h2>Fonte e critérios dos dados</h2><p>${escapeHtml(sourceNote)} Cruzamento dos registros por zona eleitoral, município e seção.</p><ul>${sourceItems}</ul><p>Portal: <a href="https://dadosabertos.tse.jus.br/" target="_blank" rel="noopener noreferrer">Dados Abertos do TSE</a>. Conjunto: <a href="https://dadosabertos.tse.jus.br/dataset/resultados-2026" target="_blank" rel="noopener noreferrer">Resultados 2026</a>. Os percentuais e totais do relatório são calculados pelo painel a partir dos totais por seção.</p></section><footer class="report-footer">Gerado em ${generatedAt}.</footer>`;
+  $('report-preview').innerHTML = `<header class="report-heading"><p>Eleições Gerais 2026 · ${date}</p><h1 id="report-title">Consulta de Comparecimento e Abstenção</h1><p>${$('turn').value}º turno · Cargo para resultados: ${escapeHtml(cargo)} · ${selectedLabel}</p></header><section class="report-metrics" aria-label="Resumo das seções selecionadas">${metrics.map(([name, value]) => `<div class="report-metric"><span>${name}</span><strong>${value}</strong></div>`).join('')}</section><p class="report-method">Taxa ponderada = total de abstenções ÷ total de eleitores aptos. A média simples das taxas por seção neste recorte é ${pf(averageRate)}; ela não substitui a taxa ponderada.</p><div class="report-table-wrap"><table class="report-table"><thead><tr><th class="num">ZE</th><th>Município</th><th class="num">Seção</th><th class="num">Local nº</th><th class="col-local-th">Local de votação</th><th class="num">Aptos</th><th class="num">Comparecimento</th><th class="num">Comparecimento %</th><th class="num">Abstenções</th><th class="num">Abstenção %</th></tr></thead><tbody>${body}</tbody></table></div><section class="report-provenance" aria-label="Fonte e critérios dos dados"><h2>Fonte e critérios dos dados</h2><p>${escapeHtml(sourceNote)} Cruzamento dos registros por zona eleitoral, município e seção.</p><ul>${sourceItems}</ul><p>Portal: <a href="https://dadosabertos.tse.jus.br/" target="_blank" rel="noopener noreferrer">Dados Abertos do TSE</a>. Conjunto: <a href="https://dadosabertos.tse.jus.br/dataset/resultados-2026" target="_blank" rel="noopener noreferrer">Resultados 2026</a>. Os percentuais e totais do relatório são calculados pelo painel a partir dos totais por seção.</p></section><footer class="report-footer">Gerado em ${generatedAt}.</footer>`;
   $('report-dialog').showModal();
 }
 
@@ -507,7 +507,14 @@ function show() {
     if (key === 'rate') value = `<span class="pill">${pf(value)}</span><span class="bar"><span class="fill" style="display:block;width:${Math.min(100, value)}%"></span></span>`;
     else if (typeof value === 'number') value = fmt(value);
     else value = escapeHtml(value);
-    return `<td class="${typeof row[key] === 'number' ? 'num' : ''}" data-label="${escapeHtml(label)}">${value ?? ''}</td>`;
+    const isNum = typeof row[key] === 'number';
+    const isNome = key === 'nome';
+    if (isNome) {
+      value = `<span class="col-local-text">${value ?? ''}</span>`;
+    }
+    const cellClass = [isNum ? 'num' : '', isNome ? 'col-local-cell' : ''].filter(Boolean).join(' ');
+    const cellTitle = isNome && row[key] ? ` title="${escapeHtml(row[key])}"` : '';
+    return `<td class="${cellClass}" data-label="${escapeHtml(label)}"${cellTitle}>${value ?? ''}</td>`;
   }).join('') + '</tr>').join('');
   const titles = { sections: 'Abstenção e votos por seção', places: 'Consolidado por local de votação', comparison: 'Comparativo eleitoral', candidates: 'Votação nominal por candidato', parties: 'Votação por partido' };
   const emptyMessage = '<div class="empty-state"><p class="empty-text">Nenhum resultado corresponde aos filtros ou à busca.</p><button class="btn btn-empty-reset" type="button"><svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg> Limpar busca e filtros</button></div>';
@@ -524,7 +531,10 @@ function show() {
     const isSorted = sortKey === key;
     const direction = sortDir === 1 ? 'ascending' : 'descending';
     const indicator = isSorted ? (sortDir === 1 ? '↑' : '↓') : '';
-    return `<th data-key="${key}" class="${typeof rows[0]?.[key] === 'number' ? 'num' : ''}" aria-sort="${isSorted ? direction : 'none'}"><button class="sort-button" type="button" aria-label="Ordenar por ${label}">${label}<span aria-hidden="true">${indicator}</span></button></th>`;
+    const isNum = typeof rows[0]?.[key] === 'number';
+    const isNome = key === 'nome';
+    const thClass = [isNum ? 'num' : '', isNome ? 'col-local-th' : ''].filter(Boolean).join(' ');
+    return `<th data-key="${key}" class="${thClass}" aria-sort="${isSorted ? direction : 'none'}"><button class="sort-button" type="button" aria-label="Ordenar por ${label}">${label}<span aria-hidden="true">${indicator}</span></button></th>`;
   }).join('')}</tr></thead><tbody>${body || `<tr><td colspan="${data.columns.length + (selectable ? 1 : 0)}" class="empty-cell">${emptyMessage}</td></tr>`}</tbody></table></div><div class="page-controls"><span>Página ${page + 1} de ${totalPages} · Até 50 registros por página</span><div class="tools"><button class="btn" id="prev" ${page === 0 ? 'disabled' : ''}>${iconPrev} Anterior</button><button class="btn" id="next" ${page >= totalPages - 1 ? 'disabled' : ''}>Próxima ${iconNext}</button></div></div></section>`;
   updateSelectionControls();
   if (selectable) {
