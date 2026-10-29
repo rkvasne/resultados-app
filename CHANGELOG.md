@@ -2,6 +2,25 @@
 
 Este arquivo registra mudanças relevantes do painel no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/). A primeira versão publicada é `0.0.1`.
 
+## [0.0.25] - 2026-10-29
+
+### Melhorado
+
+- **Nomenclatura amigável e contextual para exportação de CSV:**
+  - Substituição do nome técnico prévio (`painel_tse_2026_turno2_sections_ZE_3_30.csv`) por uma nomenclatura em português legível e padronizada com hífens (`exportFileName`).
+  - Nomes das visões/abas traduzidos de chaves internas em inglês para termos claros (`secoes`, `locais-votacao`, `comparativo`, `candidatos`, `partidos`).
+  - Sem filtros aplicados: nome enxuto (ex: `resultados-eleicoes-2026-2-turno-secoes.csv`).
+  - Com filtros ativos: inclusão de slugs amigáveis e normalizados de município e zona (ex: `resultados-eleicoes-2026-2-turno-secoes-ji-parana-ze3.csv` ou `...-ze30.csv`).
+- **Prevenção de exportação vazia:**
+  - Botão "Exportar CSV" desabilitado automaticamente (`disabled`) quando a tabela não possui registros (por exemplo, após uma busca sem correspondências).
+  - Guarda em `download()` contra exportações vazias com aviso contextual em toast ("Nenhum registro para exportar.").
+
+### Verificado
+
+- Suíte de testes automatizados expandida para 30/30 testes aprovados (`scripts/test-app.js`).
+- Validação determinística de nomenclatura para todas as abas, turnos e combinações de filtros de município e zona.
+- Sintaxe validada via `node --check`.
+
 ## [0.0.24] - 2026-10-29
 
 ### Melhorado

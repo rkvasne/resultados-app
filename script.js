@@ -527,7 +527,7 @@ function show() {
   const iconPrev = '<svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>';
   const iconNext = '<svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>';
 
-  $('tabcontent').innerHTML = `<section class="panel"><h2>${titles[tab]}</h2><p class="hint">${data.description}</p>${selectable ? `<div class="selection-toolbar"><div class="selection-status"><span class="badge badge-selection"><span class="badge-dot badge-dot-active"></span><strong id="selection-count"></strong></span><span class="selection-hint">Seleção preservada ao alternar filtros</span></div><div class="tools"><button class="btn" id="toggle-page-selection">${iconCheck} <span>Selecionar página</span></button><button class="btn" id="preview-report" ${selectedSections.size ? '' : 'disabled'}>${iconDoc} Ver Relatório</button><button class="btn" id="copy-selection-summary" ${selectedSections.size ? '' : 'disabled'}>${iconCopy} Copiar Resumo</button><button class="btn" id="clear-selection" ${selectedSections.size ? '' : 'disabled'}>${iconClear} Limpar</button></div></div>` : ''}<div class="toolbar"><div class="result-count"><span class="badge badge-subtle"><b>${fmt(rows.length)}</b> registros</span></div><div class="tools"><input class="search" id="q" value="${escapeHtml(search)}" placeholder="Buscar por seção, local, município..." aria-label="Buscar na tabela"><button class="btn" id="download">${iconDownload} Exportar CSV</button><button class="btn" id="reset" ${search ? '' : 'disabled'}>${iconClear} Limpar</button></div></div><div class="mobile-sort"><label for="mobile-sort">Ordenar por</label><select id="mobile-sort">${data.columns.map(([key, label]) => `<option value="${escapeHtml(key)}" ${sortKey === key ? 'selected' : ''}>${escapeHtml(label)}</option>`).join('')}</select><button class="btn" type="button" id="mobile-sort-direction" aria-label="Alternar para ordem ${sortDir === 1 ? 'decrescente' : 'crescente'}">${sortDir === 1 ? 'Crescente ↑' : 'Decrescente ↓'}</button></div><div class="mobile-results" role="list" aria-label="Resultados da consulta">${mobileCards || `<div class="mobile-empty">${emptyMessage}</div>`}</div><div class="table-wrap"><table><thead><tr>${selectable ? '<th class="selection-cell">Selecionar</th>' : ''}${data.columns.map(([key, label]) => {
+  $('tabcontent').innerHTML = `<section class="panel"><h2>${titles[tab]}</h2><p class="hint">${data.description}</p>${selectable ? `<div class="selection-toolbar"><div class="selection-status"><span class="badge badge-selection"><span class="badge-dot badge-dot-active"></span><strong id="selection-count"></strong></span><span class="selection-hint">Seleção preservada ao alternar filtros</span></div><div class="tools"><button class="btn" id="toggle-page-selection">${iconCheck} <span>Selecionar página</span></button><button class="btn" id="preview-report" ${selectedSections.size ? '' : 'disabled'}>${iconDoc} Ver Relatório</button><button class="btn" id="copy-selection-summary" ${selectedSections.size ? '' : 'disabled'}>${iconCopy} Copiar Resumo</button><button class="btn" id="clear-selection" ${selectedSections.size ? '' : 'disabled'}>${iconClear} Limpar</button></div></div>` : ''}<div class="toolbar"><div class="result-count"><span class="badge badge-subtle"><b>${fmt(rows.length)}</b> registros</span></div><div class="tools"><input class="search" id="q" value="${escapeHtml(search)}" placeholder="Buscar por seção, local, município..." aria-label="Buscar na tabela"><button class="btn" id="download" ${rows.length ? '' : 'disabled'}>${iconDownload} Exportar CSV</button><button class="btn" id="reset" ${search ? '' : 'disabled'}>${iconClear} Limpar</button></div></div><div class="mobile-sort"><label for="mobile-sort">Ordenar por</label><select id="mobile-sort">${data.columns.map(([key, label]) => `<option value="${escapeHtml(key)}" ${sortKey === key ? 'selected' : ''}>${escapeHtml(label)}</option>`).join('')}</select><button class="btn" type="button" id="mobile-sort-direction" aria-label="Alternar para ordem ${sortDir === 1 ? 'decrescente' : 'crescente'}">${sortDir === 1 ? 'Crescente ↑' : 'Decrescente ↓'}</button></div><div class="mobile-results" role="list" aria-label="Resultados da consulta">${mobileCards || `<div class="mobile-empty">${emptyMessage}</div>`}</div><div class="table-wrap"><table><thead><tr>${selectable ? '<th class="selection-cell">Selecionar</th>' : ''}${data.columns.map(([key, label]) => {
     const isSorted = sortKey === key;
     const direction = sortDir === 1 ? 'ascending' : 'descending';
     const indicator = isSorted ? (sortDir === 1 ? '↑' : '↓') : '';
@@ -658,7 +658,41 @@ function updateTurn() {
       : firstTurnNote;
 }
 
+function exportFileName() {
+  const turn = $('turn')?.value || '2';
+  const tabNames = {
+    sections: 'secoes',
+    places: 'locais-votacao',
+    comparison: 'comparativo',
+    candidates: 'candidatos',
+    parties: 'partidos'
+  };
+  const tabSlug = tabNames[tab] || tab;
+  const parts = ['resultados-eleicoes-2026', `${turn}-turno`, tabSlug];
+
+  const city = $('city')?.value;
+  if (city) {
+    const citySlug = city.toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+    if (citySlug) parts.push(citySlug);
+  }
+
+  const zone = $('zone')?.value;
+  if (zone) {
+    parts.push(`ze${zone}`);
+  }
+
+  return `${parts.join('-')}.csv`;
+}
+
 function download() {
+  if (!rowsCurrent || !rowsCurrent.length) {
+    showToast('Nenhum registro para exportar.');
+    return;
+  }
   hapticFeedback();
   showToast('Exportando CSV filtrado...');
   const encode = value => '"' + String(value ?? '').replace(/"/g, '""') + '"';
@@ -667,7 +701,7 @@ function download() {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement('a');
   anchor.href = url;
-  anchor.download = `painel_tse_2026_turno${$('turn').value}_${tab}_ZE_${$('zone').value || '3_30'}.csv`;
+  anchor.download = exportFileName();
   anchor.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }

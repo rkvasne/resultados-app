@@ -338,6 +338,69 @@ test('Primeira dobra possui layout compacto com header horizontal e filtros redu
   assert.ok(stylesCss.includes('padding: 8px 12px;'), 'filtros e métricas devem ter padding compacto');
 });
 
+// 12. Exportação e Nomenclatura Amigável de Arquivos
+console.log('\n[12] Exportação e Nomenclatura Amigável de Arquivos:');
+
+test('script.js declara exportFileName e gera nomes amigáveis em português', () => {
+  assert.ok(scriptJs.includes('function exportFileName()'), 'script.js deve declarar exportFileName');
+  assert.ok(scriptJs.includes("sections: 'secoes'"), 'deve mapear sections para secoes');
+  assert.ok(scriptJs.includes("places: 'locais-votacao'"), 'deve mapear places para locais-votacao');
+  assert.ok(scriptJs.includes("comparison: 'comparativo'"), 'deve mapear comparison para comparativo');
+  assert.ok(scriptJs.includes("candidates: 'candidatos'"), 'deve mapear candidates para candidatos');
+  assert.ok(scriptJs.includes("parties: 'partidos'"), 'deve mapear parties para partidos');
+});
+
+test('Lógica de exportFileName gera nomenclatura correta sem filtros e com filtros de zona e município', () => {
+  const runExportFileName = (tab, turn, city, zone) => {
+    const mock$ = id => {
+      if (id === 'turn') return { value: turn };
+      if (id === 'city') return { value: city };
+      if (id === 'zone') return { value: zone };
+      return null;
+    };
+    const fn = new Function('tab', '$', `
+      const turn = $('turn')?.value || '2';
+      const tabNames = {
+        sections: 'secoes',
+        places: 'locais-votacao',
+        comparison: 'comparativo',
+        candidates: 'candidatos',
+        parties: 'partidos'
+      };
+      const tabSlug = tabNames[tab] || tab;
+      const parts = ['resultados-eleicoes-2026', \`\${turn}-turno\`, tabSlug];
+
+      const city = $('city')?.value;
+      if (city) {
+        const citySlug = city.toLowerCase()
+          .normalize('NFD')
+          .replace(/[\\u0300-\\u036f]/g, '')
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+        if (citySlug) parts.push(citySlug);
+      }
+
+      const zone = $('zone')?.value;
+      if (zone) {
+        parts.push(\`ze\${zone}\`);
+      }
+
+      return \`\${parts.join('-')}.csv\`;
+    `);
+    return fn(tab, mock$);
+  };
+
+  assert.strictEqual(runExportFileName('sections', '2', '', ''), 'resultados-eleicoes-2026-2-turno-secoes.csv');
+  assert.strictEqual(runExportFileName('candidates', '2', '', ''), 'resultados-eleicoes-2026-2-turno-candidatos.csv');
+  assert.strictEqual(runExportFileName('sections', '2', 'JI-PARANÁ', '3'), 'resultados-eleicoes-2026-2-turno-secoes-ji-parana-ze3.csv');
+  assert.strictEqual(runExportFileName('places', '1', 'PRESIDENTE MÉDICI', ''), 'resultados-eleicoes-2026-1-turno-locais-votacao-presidente-medici.csv');
+  assert.strictEqual(runExportFileName('sections', '2', '', '30'), 'resultados-eleicoes-2026-2-turno-secoes-ze30.csv');
+});
+
+test('Botão de exportar CSV fica desabilitado quando a tabela não possui registros', () => {
+  assert.ok(scriptJs.includes('id="download" ${rows.length ? \'\' : \'disabled\'}'), 'botão download deve ter atributo disabled quando rows.length for 0');
+});
+
 console.log(`\n=== Resultado: ${passedTests}/${totalTests} testes aprovados com sucesso! ===\n`);
 if (passedTests !== totalTests) {
   process.exit(1);
